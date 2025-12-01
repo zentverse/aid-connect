@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AidRequest, RequestStatus } from '../types';
@@ -81,9 +80,9 @@ export const UpdateStatusPage: React.FC = () => {
 
   const getStatusColor = (status: RequestStatus) => {
     switch (status) {
-      case RequestStatus.FULFILLED: return 'bg-green-100 text-green-700 border-green-200';
-      case RequestStatus.PARTIALLY_FULFILLED: return 'bg-amber-100 text-amber-700 border-amber-200';
-      default: return 'bg-slate-100 text-slate-700 border-slate-200';
+      case RequestStatus.FULFILLED: return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800';
+      case RequestStatus.PARTIALLY_FULFILLED: return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800';
+      default: return 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600';
     }
   };
 
@@ -107,11 +106,11 @@ export const UpdateStatusPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="text-center max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">{t('status_title')}</h1>
-        <p className="text-slate-500">{t('status_subtitle')}</p>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{t('status_title')}</h1>
+        <p className="text-slate-500 dark:text-slate-400">{t('status_subtitle')}</p>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+      <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors">
         <form onSubmit={onSearchSubmit} className="flex flex-col gap-2">
           <div className="flex gap-4">
             <input
@@ -122,7 +121,7 @@ export const UpdateStatusPage: React.FC = () => {
                 if (error) setError('');
               }}
               placeholder="e.g. 200013501678 or 660581758v"
-              className={`flex-1 bg-white text-slate-900 p-3 rounded-lg border outline-none focus:ring-2 ${error ? 'border-red-500 focus:ring-red-200' : 'border-slate-300 focus:ring-blue-500'}`}
+              className={`flex-1 bg-white dark:bg-slate-700 text-slate-900 dark:text-white p-3 rounded-lg border outline-none focus:ring-2 ${error ? 'border-red-500 focus:ring-red-200' : 'border-slate-300 dark:border-slate-600 focus:ring-blue-500'}`}
             />
             <button 
               type="submit"
@@ -137,40 +136,40 @@ export const UpdateStatusPage: React.FC = () => {
       </div>
 
       {searched && requests.length === 0 && !error && !loading && (
-        <div className="text-center py-12 bg-white rounded-xl border border-slate-200 border-dashed">
-          <div className="text-slate-300 text-4xl mb-3"><i className="fa-regular fa-folder-open"></i></div>
-          <h3 className="text-lg font-medium text-slate-900">{t('err_no_req')}</h3>
-          <p className="text-slate-500">{t('err_no_req_desc')} "{searchNic}".</p>
+        <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 border-dashed">
+          <div className="text-slate-300 dark:text-slate-600 text-4xl mb-3"><i className="fa-regular fa-folder-open"></i></div>
+          <h3 className="text-lg font-medium text-slate-900 dark:text-slate-200">{t('err_no_req')}</h3>
+          <p className="text-slate-500 dark:text-slate-400">{t('err_no_req_desc')} "{searchNic}".</p>
         </div>
       )}
 
       <div className="space-y-6">
         {requests.map((req, reqIndex) => (
-          <div key={req.id} className="bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden">
-            <div className="p-6 border-b border-slate-100 bg-slate-50 flex flex-wrap justify-between items-center gap-4">
+          <div key={req.id} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 overflow-hidden transition-colors">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex flex-wrap justify-between items-center gap-4">
               <div>
                 <div className="flex items-center gap-3 mb-1">
-                  <h3 className="font-bold text-lg text-slate-800">{req.fullName}</h3>
+                  <h3 className="font-bold text-lg text-slate-800 dark:text-slate-200">{req.fullName}</h3>
                   <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${getStatusColor(req.status)}`}>
                     {req.status}
                   </span>
                 </div>
-                <div className="text-sm text-slate-500 flex gap-4">
+                <div className="text-sm text-slate-500 dark:text-slate-400 flex gap-4">
                    <span><i className="fa-solid fa-location-dot mr-1"></i> {translateLocation(req.location)}</span>
                    <span><i className="fa-regular fa-clock mr-1"></i> {new Date(req.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
               <div className="text-right hidden sm:block">
-                 <div className="text-xs text-slate-400">{t('lbl_req_id')}</div>
-                 <div className="font-mono text-slate-600">{req.id}</div>
+                 <div className="text-xs text-slate-400 dark:text-slate-500">{t('lbl_req_id')}</div>
+                 <div className="font-mono text-slate-600 dark:text-slate-300">{req.id}</div>
               </div>
             </div>
 
             <div className="p-6">
-              <h4 className="font-medium text-slate-700 mb-4">{t('lbl_items_req')}</h4>
+              <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-4">{t('lbl_items_req')}</h4>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                  <thead className="text-xs text-slate-500 uppercase bg-slate-50/50">
+                  <thead className="text-xs text-slate-500 dark:text-slate-400 uppercase bg-slate-50/50 dark:bg-slate-900/50">
                     <tr>
                       <th className="px-4 py-3 rounded-l-lg">{t('th_item')}</th>
                       <th className="px-4 py-3">{t('th_category')}</th>
@@ -179,31 +178,31 @@ export const UpdateStatusPage: React.FC = () => {
                       <th className="px-4 py-3 rounded-r-lg text-right">{t('th_action')}</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                     {req.items.map(item => (
                       <tr key={item.id}>
-                        <td className="px-4 py-3 font-medium text-slate-800">{item.name}</td>
-                        <td className="px-4 py-3 text-slate-500">{t(item.category as TranslationKey)}</td>
-                        <td className="px-4 py-3 text-center font-semibold">{item.quantityNeeded} {t(item.unit as TranslationKey)}</td>
+                        <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">{item.name}</td>
+                        <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{t(item.category as TranslationKey)}</td>
+                        <td className="px-4 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">{item.quantityNeeded} {t(item.unit as TranslationKey)}</td>
                         <td className="px-4 py-3 text-center">
-                          <span className={`font-bold ${item.quantityReceived >= item.quantityNeeded ? 'text-green-600' : 'text-amber-600'}`}>
+                          <span className={`font-bold ${item.quantityReceived >= item.quantityNeeded ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
                             {item.quantityReceived}
                           </span>
-                           <span className="text-slate-400 text-xs ml-1">{t(item.unit as TranslationKey)}</span>
+                           <span className="text-slate-400 dark:text-slate-500 text-xs ml-1">{t(item.unit as TranslationKey)}</span>
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex items-center justify-end gap-2">
                              <button
                                onClick={() => handleQuantityReceivedChange(reqIndex, item.id, item.quantityReceived + 1)}
                                disabled={item.quantityReceived >= item.quantityNeeded}
-                               className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                               className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                              >
                                <i className="fa-solid fa-plus"></i>
                              </button>
                              <button
                                onClick={() => handleQuantityReceivedChange(reqIndex, item.id, item.quantityReceived - 1)}
                                disabled={item.quantityReceived <= 0}
-                               className="w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                               className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                              >
                                <i className="fa-solid fa-minus"></i>
                              </button>
@@ -214,7 +213,7 @@ export const UpdateStatusPage: React.FC = () => {
                   </tbody>
                 </table>
               </div>
-              <p className="text-xs text-slate-400 mt-4 italic">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-4 italic">
                 {t('hint_update')}
               </p>
             </div>

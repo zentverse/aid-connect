@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AidCategory, AidItem, AidRequest, RequestStatus } from '../types';
@@ -287,20 +286,20 @@ export const RequestAidPage: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">{t('req_title')}</h1>
-        <p className="text-slate-500">{t('req_subtitle')}</p>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{t('req_title')}</h1>
+        <p className="text-slate-500 dark:text-slate-400">{t('req_subtitle')}</p>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden transition-colors">
         {/* AI Smart Fill Section */}
-        <div className="bg-indigo-50 p-6 border-b border-indigo-100">
+        <div className="bg-indigo-50 dark:bg-indigo-900/20 p-6 border-b border-indigo-100 dark:border-indigo-800/50">
           <div className="flex items-start gap-3">
-            <div className="mt-1 text-indigo-600">
+            <div className="mt-1 text-indigo-600 dark:text-indigo-400">
                <i className="fa-solid fa-wand-magic-sparkles text-xl"></i>
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-indigo-900 mb-2">{t('ai_title')}</h3>
-              <p className="text-sm text-indigo-700 mb-3">
+              <h3 className="font-semibold text-indigo-900 dark:text-indigo-100 mb-2">{t('ai_title')}</h3>
+              <p className="text-sm text-indigo-700 dark:text-indigo-300 mb-3">
                 {t('ai_desc')}
               </p>
               <div className="flex gap-2">
@@ -308,14 +307,14 @@ export const RequestAidPage: React.FC = () => {
                   value={naturalInput}
                   onChange={(e) => setNaturalInput(e.target.value)}
                   placeholder={t('ai_placeholder')}
-                  className="flex-1 bg-white text-slate-900 p-3 text-sm rounded-lg border border-indigo-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-h-[80px]"
+                  className="flex-1 bg-white dark:bg-slate-700 text-slate-900 dark:text-white p-3 text-sm rounded-lg border border-indigo-200 dark:border-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-h-[80px]"
                 />
               </div>
                <button
                   type="button"
                   onClick={handleSmartFill}
                   disabled={aiLoading || !naturalInput}
-                  className="mt-3 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2"
+                  className="mt-3 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white text-sm font-medium rounded-lg disabled:opacity-50 flex items-center gap-2"
                 >
                   {aiLoading ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-bolt"></i>}
                   {t('btn_autofill')}
@@ -327,68 +326,68 @@ export const RequestAidPage: React.FC = () => {
         <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8">
           {/* Personal Info */}
           <section className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">{t('sect_personal')}</h3>
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-700 pb-2">{t('sect_personal')}</h3>
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">{t('lbl_fullname')} *</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('lbl_fullname')} *</label>
                 <input
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleInputChange}
                   type="text"
-                  className={`bg-white text-slate-900 w-full rounded-lg border p-2.5 focus:ring-2 outline-none transition-colors ${
+                  className={`bg-white dark:bg-slate-700 text-slate-900 dark:text-white w-full rounded-lg border p-2.5 focus:ring-2 outline-none transition-colors ${
                     errors.fullName 
-                      ? 'border-red-500 focus:ring-red-200 focus:border-red-500' 
-                      : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'
+                      ? 'border-red-500 focus:ring-red-200' 
+                      : 'border-slate-300 dark:border-slate-600 focus:ring-blue-500 focus:border-blue-500'
                   }`}
                 />
                 {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">{t('lbl_nic')} *</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('lbl_nic')} *</label>
                 <input
                   name="nic"
                   value={formData.nic}
                   onChange={handleInputChange}
                   type="text"
                   placeholder="e.g. 200013501678 or 660581758v"
-                  className={`bg-white text-slate-900 w-full rounded-lg border p-2.5 focus:ring-2 outline-none transition-colors ${
+                  className={`bg-white dark:bg-slate-700 text-slate-900 dark:text-white w-full rounded-lg border p-2.5 focus:ring-2 outline-none transition-colors ${
                     errors.nic 
-                      ? 'border-red-500 focus:ring-red-200 focus:border-red-500' 
-                      : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'
+                      ? 'border-red-500 focus:ring-red-200' 
+                      : 'border-slate-300 dark:border-slate-600 focus:ring-blue-500 focus:border-blue-500'
                   }`}
                 />
                  {errors.nic && <p className="text-red-500 text-xs mt-1">{errors.nic}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">{t('lbl_contact')} *</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('lbl_contact')} *</label>
                 <input
                   name="contactNumber"
                   value={formData.contactNumber}
                   onChange={handleInputChange}
                   type="tel"
                   placeholder="e.g. 077 123 4567"
-                  className={`bg-white text-slate-900 w-full rounded-lg border p-2.5 focus:ring-2 outline-none transition-colors ${
+                  className={`bg-white dark:bg-slate-700 text-slate-900 dark:text-white w-full rounded-lg border p-2.5 focus:ring-2 outline-none transition-colors ${
                     errors.contactNumber 
-                      ? 'border-red-500 focus:ring-red-200 focus:border-red-500' 
-                      : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'
+                      ? 'border-red-500 focus:ring-red-200' 
+                      : 'border-slate-300 dark:border-slate-600 focus:ring-blue-500 focus:border-blue-500'
                   }`}
                 />
                 {errors.contactNumber && <p className="text-red-500 text-xs mt-1">{errors.contactNumber}</p>}
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">{t('lbl_extra_contact')} <span className="text-slate-400 font-normal">{t('lbl_optional')}</span></label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('lbl_extra_contact')} <span className="text-slate-400 dark:text-slate-500 font-normal">{t('lbl_optional')}</span></label>
                 <input
                   name="extraContactNumber"
                   value={formData.extraContactNumber}
                   onChange={handleInputChange}
                   type="tel"
                   placeholder="e.g. 011 234 5678"
-                  className={`bg-white text-slate-900 w-full rounded-lg border p-2.5 focus:ring-2 outline-none transition-colors ${
+                  className={`bg-white dark:bg-slate-700 text-slate-900 dark:text-white w-full rounded-lg border p-2.5 focus:ring-2 outline-none transition-colors ${
                     errors.extraContactNumber 
-                      ? 'border-red-500 focus:ring-red-200 focus:border-red-500' 
-                      : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'
+                      ? 'border-red-500 focus:ring-red-200' 
+                      : 'border-slate-300 dark:border-slate-600 focus:ring-blue-500 focus:border-blue-500'
                   }`}
                 />
                 {errors.extraContactNumber && <p className="text-red-500 text-xs mt-1">{errors.extraContactNumber}</p>}
@@ -397,14 +396,14 @@ export const RequestAidPage: React.FC = () => {
               {/* Location Selection Split */}
               <div className="col-span-1 md:col-span-2 grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('lbl_district')} *</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('lbl_district')} *</label>
                   <select
                     value={selectedDistrict}
                     onChange={handleDistrictChange}
-                    className={`bg-white text-slate-900 w-full rounded-lg border p-2.5 focus:ring-2 outline-none transition-colors ${
+                    className={`bg-white dark:bg-slate-700 text-slate-900 dark:text-white w-full rounded-lg border p-2.5 focus:ring-2 outline-none transition-colors ${
                       errors.district 
-                        ? 'border-red-500 focus:ring-red-200 focus:border-red-500' 
-                        : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'
+                        ? 'border-red-500 focus:ring-red-200' 
+                        : 'border-slate-300 dark:border-slate-600 focus:ring-blue-500 focus:border-blue-500'
                     }`}
                   >
                     <option value="">{t('sel_district')}</option>
@@ -416,15 +415,15 @@ export const RequestAidPage: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('lbl_region')} *</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('lbl_region')} *</label>
                   <select
                     value={selectedRegion}
                     onChange={handleRegionChange}
                     disabled={!selectedDistrict}
-                    className={`bg-white text-slate-900 w-full rounded-lg border p-2.5 focus:ring-2 outline-none transition-colors disabled:opacity-50 disabled:bg-slate-100 ${
+                    className={`bg-white dark:bg-slate-700 text-slate-900 dark:text-white w-full rounded-lg border p-2.5 focus:ring-2 outline-none transition-colors disabled:opacity-50 disabled:bg-slate-100 dark:disabled:bg-slate-800 ${
                       errors.region 
-                        ? 'border-red-500 focus:ring-red-200 focus:border-red-500' 
-                        : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'
+                        ? 'border-red-500 focus:ring-red-200' 
+                        : 'border-slate-300 dark:border-slate-600 focus:ring-blue-500 focus:border-blue-500'
                     }`}
                   >
                     <option value="">{t('sel_region')}</option>
@@ -433,7 +432,7 @@ export const RequestAidPage: React.FC = () => {
                     ))}
                   </select>
                    {errors.region && <p className="text-red-500 text-xs mt-1">{errors.region}</p>}
-                   <p className="text-xs text-slate-500 mt-1">{t('hint_region')}</p>
+                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t('hint_region')}</p>
                 </div>
               </div>
 
@@ -442,29 +441,29 @@ export const RequestAidPage: React.FC = () => {
 
           {/* Items */}
           <section className="space-y-4">
-            <div className="flex justify-between items-center border-b pb-2">
-              <h3 className="text-lg font-semibold text-slate-800">{t('sect_items')} *</h3>
+            <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-2">
+              <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">{t('sect_items')} *</h3>
               <button
                 type="button"
                 onClick={addItem}
-                className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium flex items-center gap-1"
               >
                 <i className="fa-solid fa-plus"></i> {t('btn_add_item')}
               </button>
             </div>
-            {errors.items && <p className="text-red-500 text-sm bg-red-50 p-2 rounded">{errors.items}</p>}
+            {errors.items && <p className="text-red-500 text-sm bg-red-50 dark:bg-red-900/20 p-2 rounded">{errors.items}</p>}
             
             <div className="space-y-4">
               {items.map((item, index) => (
-                <div key={item.id} className="bg-slate-50 p-4 rounded-lg border border-slate-100 shadow-sm">
+                <div key={item.id} className="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-100 dark:border-slate-700 shadow-sm">
                   <div className="flex flex-col md:flex-row gap-3 items-start md:items-start mb-3">
                     {/* Category - First */}
                     <div className="w-full md:w-40">
-                      <label className="block text-xs font-medium text-slate-500 mb-1">{t('lbl_category')}</label>
+                      <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">{t('lbl_category')}</label>
                       <select
                         value={item.category}
                         onChange={(e) => handleItemChange(item.id, 'category', e.target.value)}
-                        className="w-full bg-white text-slate-900 rounded border-slate-300 border p-2 text-sm focus:border-blue-500 outline-none"
+                        className="w-full bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded border-slate-300 dark:border-slate-600 border p-2 text-sm focus:border-blue-500 outline-none"
                       >
                         {CATEGORIES.map(c => <option key={c} value={c}>{t(c as TranslationKey)}</option>)}
                       </select>
@@ -472,26 +471,26 @@ export const RequestAidPage: React.FC = () => {
 
                     {/* Item Name - Second */}
                     <div className="flex-1 w-full">
-                      <label className="block text-xs font-medium text-slate-500 mb-1">{t('lbl_item_name')}</label>
+                      <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">{t('lbl_item_name')}</label>
                       <input
                         value={item.name}
                         onChange={(e) => handleItemChange(item.id, 'name', e.target.value)}
                         onBlur={() => handleGenerateKeywords(item.id, item.name, item.category)}
                         placeholder="e.g. Rice"
-                        className={`bg-white text-slate-900 w-full rounded border p-2 text-sm outline-none ${
-                           errors[`item_${item.id}_name`] ? 'border-red-500' : 'border-slate-300 focus:border-blue-500'
+                        className={`bg-white dark:bg-slate-800 text-slate-900 dark:text-white w-full rounded border p-2 text-sm outline-none ${
+                           errors[`item_${item.id}_name`] ? 'border-red-500' : 'border-slate-300 dark:border-slate-600 focus:border-blue-500'
                         }`}
                       />
                       {errors[`item_${item.id}_name`] && <p className="text-red-500 text-[10px] mt-1">Required</p>}
                     </div>
 
                     <div className="w-32">
-                       <label className="block text-xs font-medium text-slate-500 mb-1">{t('lbl_qty')}</label>
-                       <div className="flex items-center border border-slate-300 rounded bg-white overflow-hidden">
+                       <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">{t('lbl_qty')}</label>
+                       <div className="flex items-center border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-800 overflow-hidden">
                          <button
                            type="button"
                            onClick={() => handleItemChange(item.id, 'quantityNeeded', Math.max(1, item.quantityNeeded - 1))}
-                           className="px-3 py-2 text-slate-600 hover:bg-slate-50 transition-colors border-r border-slate-200"
+                           className="px-3 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors border-r border-slate-200 dark:border-slate-600"
                          >
                            <i className="fa-solid fa-minus text-xs"></i>
                          </button>
@@ -500,23 +499,23 @@ export const RequestAidPage: React.FC = () => {
                            min="1"
                            value={item.quantityNeeded}
                            onChange={(e) => handleItemChange(item.id, 'quantityNeeded', parseInt(e.target.value) || 0)}
-                           className="w-full text-center bg-white text-slate-900 text-sm focus:outline-none appearance-none"
+                           className="w-full text-center bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none appearance-none"
                          />
                          <button
                            type="button"
                            onClick={() => handleItemChange(item.id, 'quantityNeeded', item.quantityNeeded + 1)}
-                           className="px-3 py-2 text-slate-600 hover:bg-slate-50 transition-colors border-l border-slate-200"
+                           className="px-3 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors border-l border-slate-200 dark:border-slate-600"
                          >
                            <i className="fa-solid fa-plus text-xs"></i>
                          </button>
                        </div>
                     </div>
                      <div className="w-24">
-                       <label className="block text-xs font-medium text-slate-500 mb-1">{t('lbl_unit')}</label>
+                       <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">{t('lbl_unit')}</label>
                        <select
                         value={item.unit}
                         onChange={(e) => handleItemChange(item.id, 'unit', e.target.value)}
-                        className="w-full bg-white text-slate-900 rounded border-slate-300 border p-2 text-sm focus:border-blue-500 outline-none"
+                        className="w-full bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded border-slate-300 dark:border-slate-600 border p-2 text-sm focus:border-blue-500 outline-none"
                       >
                         {UNITS.map(u => <option key={u} value={u}>{t(u as TranslationKey)}</option>)}
                       </select>
@@ -536,7 +535,7 @@ export const RequestAidPage: React.FC = () => {
                   {/* Keywords Section */}
                   <div className="mt-2 pl-1">
                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xs font-medium text-slate-500 flex items-center gap-1">
+                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
                           <i className="fa-solid fa-tags"></i> {t('lbl_keywords')}
                         </span>
                         {keywordLoaders[item.id] && <i className="fa-solid fa-circle-notch fa-spin text-xs text-blue-500"></i>}
@@ -544,7 +543,7 @@ export const RequestAidPage: React.FC = () => {
                           <button
                              type="button"
                              onClick={() => handleGenerateKeywords(item.id, item.name, item.category)}
-                             className="text-[10px] text-blue-600 hover:underline cursor-pointer"
+                             className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                              title="Reset to default AI keywords"
                           >
                              {t('btn_reset_defaults')}
@@ -554,7 +553,7 @@ export const RequestAidPage: React.FC = () => {
                      <div className="flex flex-wrap gap-2">
                         {item.keywords && item.keywords.length > 0 ? (
                           item.keywords.map((keyword, kIndex) => (
-                            <span key={`${item.id}-kw-${kIndex}`} className="inline-flex items-center px-2 py-1 rounded bg-white border border-slate-200 text-xs text-slate-600">
+                            <span key={`${item.id}-kw-${kIndex}`} className="inline-flex items-center px-2 py-1 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-xs text-slate-600 dark:text-slate-300">
                                {keyword}
                                <button 
                                  type="button"
@@ -576,13 +575,13 @@ export const RequestAidPage: React.FC = () => {
           </section>
 
           <section>
-             <label className="block text-sm font-medium text-slate-700 mb-1">{t('lbl_notes')}</label>
+             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('lbl_notes')}</label>
              <textarea
                name="notes"
                value={formData.notes}
                onChange={handleInputChange}
                rows={3}
-               className="w-full bg-white text-slate-900 rounded-lg border-slate-300 border p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+               className="w-full bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg border-slate-300 dark:border-slate-600 border p-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                placeholder={t('lbl_notes') + "..."}
              />
           </section>
@@ -591,7 +590,7 @@ export const RequestAidPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 disabled:opacity-70 flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 dark:shadow-none disabled:opacity-70 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>{t('btn_processing')}</>
