@@ -4,6 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { getRequests } from '../services/storageService';
 import { generateSituationReport } from '../services/geminiService';
 import { AidRequest, DashboardStats, RequestStatus } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6'];
 
@@ -54,6 +55,7 @@ const CustomTreemapTooltip = ({ active, payload }: any) => {
 };
 
 export const DonorDashboardPage: React.FC = () => {
+  const { t } = useLanguage();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [requests, setRequests] = useState<AidRequest[]>([]);
   const [report, setReport] = useState<string>('');
@@ -163,7 +165,7 @@ export const DonorDashboardPage: React.FC = () => {
     setLoadingReport(false);
   };
 
-  const filteredRequests = filterLocation === 'All' 
+  const filteredRequests = filterLocation === 'All' || filterLocation === t('feed_all_loc')
     ? requests 
     : requests.filter(r => r.location === filterLocation);
 
@@ -175,8 +177,8 @@ export const DonorDashboardPage: React.FC = () => {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-           <h1 className="text-3xl font-bold text-slate-900">Needs Dashboard</h1>
-           <p className="text-slate-500">Real-time overview of community requirements and distribution status.</p>
+           <h1 className="text-3xl font-bold text-slate-900">{t('dash_title')}</h1>
+           <p className="text-slate-500">{t('dash_subtitle')}</p>
         </div>
         <div className="flex gap-2">
            <button 
@@ -184,7 +186,7 @@ export const DonorDashboardPage: React.FC = () => {
              className="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 shadow-md shadow-purple-100 flex items-center gap-2"
            >
              {loadingReport ? <i className="fa-solid fa-circle-notch fa-spin"></i> : <i className="fa-solid fa-robot"></i>}
-             Generate AI Situation Report
+             {t('btn_gen_report')}
            </button>
         </div>
       </div>
@@ -193,26 +195,26 @@ export const DonorDashboardPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {/* Card 1: Total Active */}
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-          <div className="text-sm font-medium text-slate-500 mb-1">Total Active Requests</div>
+          <div className="text-sm font-medium text-slate-500 mb-1">{t('kpi_active')}</div>
           <div className="text-3xl font-bold text-slate-800">{stats.pendingRequests}</div>
-          <div className="text-xs text-amber-600 mt-2 font-medium">Needs Attention</div>
+          <div className="text-xs text-amber-600 mt-2 font-medium">{t('kpi_attention')}</div>
         </div>
         
         {/* Card 2: Fulfilled */}
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-          <div className="text-sm font-medium text-slate-500 mb-1">Fulfilled Requests</div>
+          <div className="text-sm font-medium text-slate-500 mb-1">{t('kpi_fulfilled')}</div>
           <div className="text-3xl font-bold text-slate-800">{stats.fulfilledRequests}</div>
-          <div className="text-xs text-green-600 mt-2 font-medium">Completed</div>
+          <div className="text-xs text-green-600 mt-2 font-medium">{t('kpi_completed')}</div>
         </div>
 
         {/* Card 3: Highest Urgent Regions (NEW) */}
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
-          <div className="text-sm font-medium text-slate-500 mb-2">Highest Urgent Regions</div>
+          <div className="text-sm font-medium text-slate-500 mb-2">{t('kpi_urgent_regions')}</div>
           <div className="space-y-2">
              {stats.topUrgentRegions.slice(0, 3).map((item, idx) => (
                <div key={idx} className="flex justify-between items-center text-sm">
                  <span className="text-slate-700 font-medium truncate max-w-[120px]" title={item.location}>{item.location}</span>
-                 <span className="text-red-600 font-bold">{item.count} Requests</span>
+                 <span className="text-red-600 font-bold">{item.count} {t('lbl_requests')}</span>
                </div>
              ))}
              {stats.topUrgentRegions.length === 0 && <span className="text-slate-400 italic">No data available</span>}
@@ -221,12 +223,12 @@ export const DonorDashboardPage: React.FC = () => {
 
         {/* Card 4: Highest Urgent Categories */}
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
-          <div className="text-sm font-medium text-slate-500 mb-2">Highest Urgent Categories</div>
+          <div className="text-sm font-medium text-slate-500 mb-2">{t('kpi_urgent_cats')}</div>
           <div className="space-y-2">
              {stats.topNeededItems.slice(0, 3).map((item, idx) => (
                <div key={idx} className="flex justify-between items-center text-sm">
                  <span className="text-slate-700 font-medium">{item.name}</span>
-                 <span className="text-blue-600 font-bold">{item.count}% Unfulfilled</span>
+                 <span className="text-blue-600 font-bold">{item.count}% {t('lbl_unfulfilled')}</span>
                </div>
              ))}
              {stats.topNeededItems.length === 0 && <span className="text-slate-400 italic">No data available</span>}
@@ -238,7 +240,7 @@ export const DonorDashboardPage: React.FC = () => {
       {report && (
         <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-xl border border-indigo-100 animate-fade-in">
           <h3 className="flex items-center gap-2 font-bold text-indigo-900 mb-4">
-            <i className="fa-solid fa-file-waveform"></i> AI Situation Analysis
+            <i className="fa-solid fa-file-waveform"></i> {t('ai_analysis_title')}
           </h3>
           <div className="prose prose-sm text-indigo-900 max-w-none space-y-2 whitespace-pre-wrap">
             {report}
@@ -250,7 +252,7 @@ export const DonorDashboardPage: React.FC = () => {
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Bar Chart */}
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-80">
-          <h3 className="font-semibold text-slate-800 mb-4">Unfulfilled Needs (%) by Category</h3>
+          <h3 className="font-semibold text-slate-800 mb-4">{t('chart_unfulfilled')}</h3>
           <ResponsiveContainer width="100%" height="90%">
             <BarChart data={stats.topNeededItems}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
@@ -259,7 +261,7 @@ export const DonorDashboardPage: React.FC = () => {
               <Tooltip 
                 cursor={{fill: '#f1f5f9'}} 
                 contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} 
-                formatter={(value: number) => [`${value}%`, 'Unfulfilled']}
+                formatter={(value: number) => [`${value}%`, t('lbl_unfulfilled')]}
               />
               <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]}>
                 {stats.topNeededItems.map((entry, index) => (
@@ -272,7 +274,7 @@ export const DonorDashboardPage: React.FC = () => {
 
         {/* Pie Chart */}
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-80">
-          <h3 className="font-semibold text-slate-800 mb-4">Request Distribution by Location</h3>
+          <h3 className="font-semibold text-slate-800 mb-4">{t('chart_location')}</h3>
           <ResponsiveContainer width="100%" height="90%">
             <PieChart>
               <Pie
@@ -297,7 +299,7 @@ export const DonorDashboardPage: React.FC = () => {
 
         {/* Treemap Chart */}
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-80 lg:col-span-2">
-           <h3 className="font-semibold text-slate-800 mb-4">Urgent Specific Needs (Keyword Treemap)</h3>
+           <h3 className="font-semibold text-slate-800 mb-4">{t('chart_treemap')}</h3>
            {stats.keywordStats.length > 0 ? (
              <ResponsiveContainer width="100%" height="90%">
               <Treemap
@@ -323,13 +325,13 @@ export const DonorDashboardPage: React.FC = () => {
       {/* Live Feed List */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-          <h3 className="font-semibold text-slate-800">Live Request Feed</h3>
+          <h3 className="font-semibold text-slate-800">{t('feed_title')}</h3>
           <select 
             value={filterLocation}
             onChange={(e) => setFilterLocation(e.target.value)}
             className="text-sm bg-white text-slate-900 border-slate-300 border rounded-lg p-1.5 focus:ring-2 focus:ring-blue-500 outline-none"
           >
-            <option value="All">All Locations</option>
+            <option value="All">{t('feed_all_loc')}</option>
             {stats.needsByLocation.map(l => (
               <option key={l.location} value={l.location}>{l.location}</option>
             ))}
@@ -337,7 +339,7 @@ export const DonorDashboardPage: React.FC = () => {
         </div>
         <div className="divide-y divide-slate-100 max-h-[500px] overflow-y-auto">
           {pendingFiltered.length === 0 ? (
-             <div className="p-8 text-center text-slate-500">No active pending requests in this area.</div>
+             <div className="p-8 text-center text-slate-500">{t('feed_empty')}</div>
           ) : (
             pendingFiltered.map(req => (
               <div key={req.id} className="p-4 hover:bg-slate-50 transition-colors">

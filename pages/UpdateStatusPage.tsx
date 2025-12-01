@@ -1,10 +1,13 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AidRequest, RequestStatus } from '../types';
 import { getRequestByNic, saveRequest, calculateStatus } from '../services/storageService';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const UpdateStatusPage: React.FC = () => {
   const location = useLocation();
+  const { t } = useLanguage();
   const [searchNic, setSearchNic] = useState('');
   const [requests, setRequests] = useState<AidRequest[]>([]);
   const [searched, setSearched] = useState(false);
@@ -86,8 +89,8 @@ export const UpdateStatusPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="text-center max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Check & Update Status</h1>
-        <p className="text-slate-500">Enter your NIC or ID number to find your request and confirm receipt of items.</p>
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">{t('status_title')}</h1>
+        <p className="text-slate-500">{t('status_subtitle')}</p>
       </div>
 
       <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
@@ -100,7 +103,7 @@ export const UpdateStatusPage: React.FC = () => {
                 setSearchNic(e.target.value);
                 if (error) setError('');
               }}
-              placeholder="Enter NIC / ID Number (e.g. 200013501678 or 660581758v)"
+              placeholder="e.g. 200013501678 or 660581758v"
               className={`flex-1 bg-white text-slate-900 p-3 rounded-lg border outline-none focus:ring-2 ${error ? 'border-red-500 focus:ring-red-200' : 'border-slate-300 focus:ring-blue-500'}`}
             />
             <button 
@@ -108,7 +111,7 @@ export const UpdateStatusPage: React.FC = () => {
               disabled={loading}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-70"
             >
-              {loading ? <i className="fa-solid fa-spinner fa-spin"></i> : 'Search'}
+              {loading ? <i className="fa-solid fa-spinner fa-spin"></i> : t('btn_search')}
             </button>
           </div>
           {error && <p className="text-red-500 text-sm ml-1">{error}</p>}
@@ -118,8 +121,8 @@ export const UpdateStatusPage: React.FC = () => {
       {searched && requests.length === 0 && !error && !loading && (
         <div className="text-center py-12 bg-white rounded-xl border border-slate-200 border-dashed">
           <div className="text-slate-300 text-4xl mb-3"><i className="fa-regular fa-folder-open"></i></div>
-          <h3 className="text-lg font-medium text-slate-900">No requests found</h3>
-          <p className="text-slate-500">Could not find any requests associated with "{searchNic}".</p>
+          <h3 className="text-lg font-medium text-slate-900">{t('err_no_req')}</h3>
+          <p className="text-slate-500">{t('err_no_req_desc')} "{searchNic}".</p>
         </div>
       )}
 
@@ -140,22 +143,22 @@ export const UpdateStatusPage: React.FC = () => {
                 </div>
               </div>
               <div className="text-right hidden sm:block">
-                 <div className="text-xs text-slate-400">Request ID</div>
+                 <div className="text-xs text-slate-400">{t('lbl_req_id')}</div>
                  <div className="font-mono text-slate-600">{req.id}</div>
               </div>
             </div>
 
             <div className="p-6">
-              <h4 className="font-medium text-slate-700 mb-4">Items requested</h4>
+              <h4 className="font-medium text-slate-700 mb-4">{t('lbl_items_req')}</h4>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
                   <thead className="text-xs text-slate-500 uppercase bg-slate-50/50">
                     <tr>
-                      <th className="px-4 py-3 rounded-l-lg">Item</th>
-                      <th className="px-4 py-3">Category</th>
-                      <th className="px-4 py-3 text-center">Needed</th>
-                      <th className="px-4 py-3 text-center">Received</th>
-                      <th className="px-4 py-3 rounded-r-lg text-right">Action</th>
+                      <th className="px-4 py-3 rounded-l-lg">{t('th_item')}</th>
+                      <th className="px-4 py-3">{t('th_category')}</th>
+                      <th className="px-4 py-3 text-center">{t('th_needed')}</th>
+                      <th className="px-4 py-3 text-center">{t('th_received')}</th>
+                      <th className="px-4 py-3 rounded-r-lg text-right">{t('th_action')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -194,7 +197,7 @@ export const UpdateStatusPage: React.FC = () => {
                 </table>
               </div>
               <p className="text-xs text-slate-400 mt-4 italic">
-                * Please update the "Received" count as items arrive. This helps donors know what is still needed.
+                {t('hint_update')}
               </p>
             </div>
           </div>
