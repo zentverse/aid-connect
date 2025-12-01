@@ -5,6 +5,7 @@ import { getRequests } from '../services/storageService';
 import { generateSituationReport } from '../services/geminiService';
 import { AidRequest, DashboardStats, RequestStatus } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
+import { TranslationKey } from '../translations';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6'];
 
@@ -171,7 +172,44 @@ export const DonorDashboardPage: React.FC = () => {
 
   const pendingFiltered = filteredRequests.filter(r => r.status !== RequestStatus.FULFILLED);
 
-  if (isLoading || !stats) return <div className="p-8 text-center text-slate-500">Loading Dashboard Data...</div>;
+  // Helper to translate location strings "District - Region"
+  const translateLocation = (loc: string) => {
+    if (!loc) return '';
+    const parts = loc.split(' - ');
+    if (parts.length >= 1) {
+       const districtTranslated = t(parts[0] as TranslationKey);
+       if (parts.length > 1) {
+         const regionTranslated = t(parts[1] as TranslationKey);
+         return `${districtTranslated} - ${regionTranslated}`;
+       }
+       return districtTranslated;
+    }
+    return loc;
+  };
+
+  // Create translated copy of stats for chart rendering
+  const getTranslatedStats = () => {
+    if (!stats) return null;
+    return {
+      ...stats,
+      topNeededItems: stats.topNeededItems.map(item => ({
+        ...item,
+        name: t(item.name as TranslationKey) // Translate Category Name
+      })),
+      needsByLocation: stats.needsByLocation.map(item => ({
+        ...item,
+        location: translateLocation(item.location)
+      })),
+      topUrgentRegions: stats.topUrgentRegions.map(item => ({
+        ...item,
+        location: translateLocation(item.location)
+      }))
+    };
+  };
+
+  const translatedStats = getTranslatedStats();
+
+  if (isLoading || !stats || !translatedStats) return <div className="p-8 text-center text-slate-500">Loading Dashboard Data...</div>;
 
   return (
     <div className="space-y-8">
@@ -211,13 +249,13 @@ export const DonorDashboardPage: React.FC = () => {
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
           <div className="text-sm font-medium text-slate-500 mb-2">{t('kpi_urgent_regions')}</div>
           <div className="space-y-2">
-             {stats.topUrgentRegions.slice(0, 3).map((item, idx) => (
+             {translatedStats.topUrgentRegions.slice(0, 3).map((item, idx) => (
                <div key={idx} className="flex justify-between items-center text-sm">
                  <span className="text-slate-700 font-medium truncate max-w-[120px]" title={item.location}>{item.location}</span>
                  <span className="text-red-600 font-bold">{item.count} {t('lbl_requests')}</span>
                </div>
              ))}
-             {stats.topUrgentRegions.length === 0 && <span className="text-slate-400 italic">No data available</span>}
+             {translatedStats.topUrgentRegions.length === 0 && <span className="text-slate-400 italic">No data available</span>}
           </div>
         </div>
 
@@ -225,13 +263,13 @@ export const DonorDashboardPage: React.FC = () => {
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
           <div className="text-sm font-medium text-slate-500 mb-2">{t('kpi_urgent_cats')}</div>
           <div className="space-y-2">
-             {stats.topNeededItems.slice(0, 3).map((item, idx) => (
+             {translatedStats.topNeededItems.slice(0, 3).map((item, idx) => (
                <div key={idx} className="flex justify-between items-center text-sm">
                  <span className="text-slate-700 font-medium">{item.name}</span>
                  <span className="text-blue-600 font-bold">{item.count}% {t('lbl_unfulfilled')}</span>
                </div>
              ))}
-             {stats.topNeededItems.length === 0 && <span className="text-slate-400 italic">No data available</span>}
+             {translatedStats.topNeededItems.length === 0 && <span className="text-slate-400 italic">No data available</span>}
           </div>
         </div>
       </div>
@@ -254,7 +292,7 @@ export const DonorDashboardPage: React.FC = () => {
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-80">
           <h3 className="font-semibold text-slate-800 mb-4">{t('chart_unfulfilled')}</h3>
           <ResponsiveContainer width="100%" height="90%">
-            <BarChart data={stats.topNeededItems}>
+            <BarChart data={translatedStats.topNeededItems}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12}} />
               <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12}} unit="%" domain={[0, 100]} />
@@ -264,7 +302,7 @@ export const DonorDashboardPage: React.FC = () => {
                 formatter={(value: number) => [`${value}%`, t('lbl_unfulfilled')]}
               />
               <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]}>
-                {stats.topNeededItems.map((entry, index) => (
+                {translatedStats.topNeededItems.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Bar>
@@ -278,7 +316,7 @@ export const DonorDashboardPage: React.FC = () => {
           <ResponsiveContainer width="100%" height="90%">
             <PieChart>
               <Pie
-                data={stats.needsByLocation}
+                data={translatedStats.needsByLocation}
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
@@ -287,7 +325,7 @@ export const DonorDashboardPage: React.FC = () => {
                 dataKey="count"
                 nameKey="location"
               >
-                {stats.needsByLocation.map((entry, index) => (
+                {translatedStats.needsByLocation.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
@@ -333,7 +371,7 @@ export const DonorDashboardPage: React.FC = () => {
           >
             <option value="All">{t('feed_all_loc')}</option>
             {stats.needsByLocation.map(l => (
-              <option key={l.location} value={l.location}>{l.location}</option>
+              <option key={l.location} value={l.location}>{translateLocation(l.location)}</option>
             ))}
           </select>
         </div>
@@ -345,7 +383,7 @@ export const DonorDashboardPage: React.FC = () => {
               <div key={req.id} className="p-4 hover:bg-slate-50 transition-colors">
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <span className="font-medium text-slate-900">{req.location}</span>
+                    <span className="font-medium text-slate-900">{translateLocation(req.location)}</span>
                     <span className="text-slate-400 mx-2">•</span>
                     <span className="text-sm text-slate-500">{new Date(req.createdAt).toLocaleDateString()}</span>
                   </div>
@@ -357,7 +395,7 @@ export const DonorDashboardPage: React.FC = () => {
                     if (remaining <= 0) return null;
                     return (
                       <span key={item.id} className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-100">
-                        {item.name} ({remaining} {item.unit})
+                        {item.name} ({remaining} {t(item.unit as TranslationKey)})
                       </span>
                     );
                   })}

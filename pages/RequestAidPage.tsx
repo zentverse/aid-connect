@@ -6,6 +6,7 @@ import { DISTRICTS, REGIONS, CATEGORIES, UNITS } from '../constants';
 import { extractSmartFillData, generateItemKeywords } from '../services/geminiService';
 import { saveRequest } from '../services/storageService';
 import { useLanguage } from '../contexts/LanguageContext';
+import { TranslationKey } from '../translations';
 
 export const RequestAidPage: React.FC = () => {
   const navigate = useNavigate();
@@ -408,7 +409,7 @@ export const RequestAidPage: React.FC = () => {
                   >
                     <option value="">{t('sel_district')}</option>
                     {DISTRICTS.map(dist => (
-                      <option key={dist} value={dist}>{dist}</option>
+                      <option key={dist} value={dist}>{t(dist as TranslationKey)}</option>
                     ))}
                   </select>
                   {errors.district && <p className="text-red-500 text-xs mt-1">{errors.district}</p>}
@@ -428,7 +429,7 @@ export const RequestAidPage: React.FC = () => {
                   >
                     <option value="">{t('sel_region')}</option>
                     {selectedDistrict && REGIONS[selectedDistrict]?.map(reg => (
-                      <option key={reg} value={reg}>{reg}</option>
+                      <option key={reg} value={reg}>{t(reg as TranslationKey)}</option>
                     ))}
                   </select>
                    {errors.region && <p className="text-red-500 text-xs mt-1">{errors.region}</p>}
@@ -465,7 +466,7 @@ export const RequestAidPage: React.FC = () => {
                         onChange={(e) => handleItemChange(item.id, 'category', e.target.value)}
                         className="w-full bg-white text-slate-900 rounded border-slate-300 border p-2 text-sm focus:border-blue-500 outline-none"
                       >
-                        {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                        {CATEGORIES.map(c => <option key={c} value={c}>{t(c as TranslationKey)}</option>)}
                       </select>
                     </div>
 
@@ -517,7 +518,7 @@ export const RequestAidPage: React.FC = () => {
                         onChange={(e) => handleItemChange(item.id, 'unit', e.target.value)}
                         className="w-full bg-white text-slate-900 rounded border-slate-300 border p-2 text-sm focus:border-blue-500 outline-none"
                       >
-                        {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
+                        {UNITS.map(u => <option key={u} value={u}>{t(u as TranslationKey)}</option>)}
                       </select>
                     </div>
                     <div className="pt-6">

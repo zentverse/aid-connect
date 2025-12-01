@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { AidRequest, RequestStatus } from '../types';
 import { getRequestByNic, saveRequest, calculateStatus } from '../services/storageService';
 import { useLanguage } from '../contexts/LanguageContext';
+import { TranslationKey } from '../translations';
 
 export const UpdateStatusPage: React.FC = () => {
   const location = useLocation();
@@ -86,6 +87,23 @@ export const UpdateStatusPage: React.FC = () => {
     }
   };
 
+  // Helper to safely translate "District - Region" strings
+  const translateLocation = (loc: string) => {
+    if (!loc) return '';
+    const parts = loc.split(' - ');
+    if (parts.length >= 1) {
+       // Attempt to translate the District part
+       const districtTranslated = t(parts[0] as TranslationKey);
+       // If there's a region, translate it too
+       if (parts.length > 1) {
+         const regionTranslated = t(parts[1] as TranslationKey);
+         return `${districtTranslated} - ${regionTranslated}`;
+       }
+       return districtTranslated;
+    }
+    return loc;
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="text-center max-w-2xl mx-auto">
@@ -138,7 +156,7 @@ export const UpdateStatusPage: React.FC = () => {
                   </span>
                 </div>
                 <div className="text-sm text-slate-500 flex gap-4">
-                   <span><i className="fa-solid fa-location-dot mr-1"></i> {req.location}</span>
+                   <span><i className="fa-solid fa-location-dot mr-1"></i> {translateLocation(req.location)}</span>
                    <span><i className="fa-regular fa-clock mr-1"></i> {new Date(req.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
@@ -165,13 +183,13 @@ export const UpdateStatusPage: React.FC = () => {
                     {req.items.map(item => (
                       <tr key={item.id}>
                         <td className="px-4 py-3 font-medium text-slate-800">{item.name}</td>
-                        <td className="px-4 py-3 text-slate-500">{item.category}</td>
-                        <td className="px-4 py-3 text-center font-semibold">{item.quantityNeeded} {item.unit}</td>
+                        <td className="px-4 py-3 text-slate-500">{t(item.category as TranslationKey)}</td>
+                        <td className="px-4 py-3 text-center font-semibold">{item.quantityNeeded} {t(item.unit as TranslationKey)}</td>
                         <td className="px-4 py-3 text-center">
                           <span className={`font-bold ${item.quantityReceived >= item.quantityNeeded ? 'text-green-600' : 'text-amber-600'}`}>
                             {item.quantityReceived}
                           </span>
-                           <span className="text-slate-400 text-xs ml-1">{item.unit}</span>
+                           <span className="text-slate-400 text-xs ml-1">{t(item.unit as TranslationKey)}</span>
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex items-center justify-end gap-2">

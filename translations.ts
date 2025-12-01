@@ -1,4 +1,5 @@
 
+
 export type Language = 'en' | 'si' | 'ta';
 
 export type TranslationKey = keyof typeof translations.en;
@@ -86,7 +87,51 @@ export const translations = {
     "feed_title": "Live Request Feed",
     "feed_all_loc": "All Locations",
     "feed_empty": "No active pending requests in this area.",
-    "ai_analysis_title": "AI Situation Analysis"
+    "ai_analysis_title": "AI Situation Analysis",
+
+    // Districts
+    "Gampaha": "Gampaha",
+    "Colombo": "Colombo",
+    "Puttalam": "Puttalam",
+    "Mannar": "Mannar",
+    "Trincomalee": "Trincomalee",
+    "Batticaloa": "Batticaloa",
+    "Kandy": "Kandy",
+    "Badulla": "Badulla",
+    "Matale": "Matale",
+    "Kurunegala": "Kurunegala",
+    "Ampara": "Ampara",
+    "Rathnapura": "Rathnapura",
+    "Mullaitivu": "Mullaitivu",
+    "Killinochchi": "Killinochchi",
+    "Vavuniya": "Vavuniya",
+    "Jaffna": "Jaffna",
+
+    // Regions (Sample Mapping)
+    "Negombo": "Negombo", "Gampaha City": "Gampaha City", "Kelaniya": "Kelaniya", "Wattala": "Wattala", "Ja-Ela": "Ja-Ela",
+    "Colombo Fort": "Colombo Fort", "Pettah": "Pettah", "Borella": "Borella", "Cinnamon Gardens": "Cinnamon Gardens", "Maradana": "Maradana",
+    "Havelock Town": "Havelock Town", "Wellawatte": "Wellawatte", "Dehiwala": "Dehiwala", "Mount Lavinia": "Mount Lavinia", "Moratuwa": "Moratuwa",
+    "Kotte": "Kotte", "Battaramulla": "Battaramulla", "Nugegoda": "Nugegoda", "Maharagama": "Maharagama", "Homagama": "Homagama",
+    "Puttalam Town": "Puttalam Town", "Chilaw": "Chilaw",
+    // ... (Fallback for English is key itself, explicit mapping ensures keys exist for TS)
+
+    // Categories
+    "Food": "Food",
+    "Water": "Water",
+    "Medical Supplies": "Medical Supplies",
+    "Clothing": "Clothing",
+    "Shelter": "Shelter",
+    "Hygiene": "Hygiene",
+    "Other": "Other",
+
+    // Units
+    "units": "units",
+    "packs": "packs",
+    "kg": "kg",
+    "liters": "liters",
+    "boxes": "boxes",
+    "pairs": "pairs",
+    "sets": "sets"
   },
   si: {
     "nav_request": "ඉල්ලීම්",
@@ -165,7 +210,52 @@ export const translations = {
     "feed_title": "සජීවී ඉල්ලීම්",
     "feed_all_loc": "සියලුම ප්‍රදේශ",
     "feed_empty": "මෙම ප්‍රදේශයේ සක්‍රීය ඉල්ලීම් නොමැත.",
-    "ai_analysis_title": "AI තත්ත්ව විශ්ලේෂණය"
+    "ai_analysis_title": "AI තත්ත්ව විශ්ලේෂණය",
+
+     // Districts
+    "Gampaha": "ගම්පහ",
+    "Colombo": "කොළඹ",
+    "Puttalam": "පුත්තලම",
+    "Mannar": "මන්නාරම",
+    "Trincomalee": "ත්‍රිකුණාමලය",
+    "Batticaloa": "මඩකලපුව",
+    "Kandy": "මහනුවර",
+    "Badulla": "බදුල්ල",
+    "Matale": "මාතලේ",
+    "Kurunegala": "කුරුණෑගල",
+    "Ampara": "අම්පාර",
+    "Rathnapura": "රත්නපුර",
+    "Mullaitivu": "මුලතිව්",
+    "Killinochchi": "කිලිනොච්චි",
+    "Vavuniya": "වවුනියාව",
+    "Jaffna": "යාපනය",
+
+    // Regions (Common)
+    "Negombo": "මීගමුව", "Gampaha City": "ගම්පහ නගරය", "Kelaniya": "කැලණිය", "Wattala": "වත්තල", "Ja-Ela": "ජා-ඇල", "Minuwangoda": "මිනුවන්ගොඩ",
+    "Colombo Fort": "කොළඹ කොටුව", "Pettah": "පිටකොටුව", "Borella": "බොරැල්ල", "Cinnamon Gardens": "කුරුඳුවත්ත", "Maradana": "මරදාන",
+    "Havelock Town": "හැව්ලොක් ටවුන්", "Wellawatte": "වැල්ලවත්ත", "Dehiwala": "දෙහිවල", "Mount Lavinia": "ගල්කිස්ස", "Moratuwa": "මොරටුව",
+    "Kotte": "කෝට්ටේ", "Battaramulla": "බත්තරමුල්ල", "Nugegoda": "නුගේගොඩ", "Maharagama": "මහරගම", "Homagama": "හෝමාගම", "Avissawella": "අවිස්සාවේල්ල",
+    "Puttalam Town": "පුත්තලම නගරය", "Chilaw": "හලාවත", "Nattandiya": "නාත්තන්ඩිය", "Wennappuwa": "වෙන්නප්පුව", "Mahawewa": "මහවැව",
+    "Mannar Town": "මන්නාරම", "Trincomalee Town": "ත්‍රිකුණාමලය", "Kandy City": "මහනුවර",
+    "Jaffna Town": "යාපනය",
+
+    // Categories
+    "Food": "ආහාර",
+    "Water": "ජලය",
+    "Medical Supplies": "වෛද්‍ය ද්‍රව්‍ය",
+    "Clothing": "ඇඳුම්",
+    "Shelter": "නවාතැන්",
+    "Hygiene": "සනීපාරක්ෂක",
+    "Other": "වෙනත්",
+
+    // Units
+    "units": "ඒකක",
+    "packs": "පැකට්",
+    "kg": "කි.ග්‍රෑ.",
+    "liters": "ලීටර්",
+    "boxes": "පෙට්ටි",
+    "pairs": "ජෝඩු",
+    "sets": "කට්ටල"
   },
   ta: {
     "nav_request": "கோரிக்கை",
@@ -244,6 +334,50 @@ export const translations = {
     "feed_title": "நேரடி கோரிக்கைகள்",
     "feed_all_loc": "எல்லா இடங்களும்",
     "feed_empty": "இப்பகுதியில் கோரிக்கைகள் இல்லை.",
-    "ai_analysis_title": "AI நிலைமை பகுப்பாய்வு"
+    "ai_analysis_title": "AI நிலைமை பகுப்பாய்வு",
+
+    // Districts
+    "Gampaha": "கம்பஹா",
+    "Colombo": "கொழும்பு",
+    "Puttalam": "புத்தளம்",
+    "Mannar": "மன்னார்",
+    "Trincomalee": "திருகோணமலை",
+    "Batticaloa": "மட்டக்களப்பு",
+    "Kandy": "கண்டி",
+    "Badulla": "பதுளை",
+    "Matale": "மாத்தளை",
+    "Kurunegala": "குருநாகல்",
+    "Ampara": "அம்பாறை",
+    "Rathnapura": "இரத்தினபுரி",
+    "Mullaitivu": "முல்லைத்தீவு",
+    "Killinochchi": "கிளிநொச்சி",
+    "Vavuniya": "வவுனியா",
+    "Jaffna": "யாழ்ப்பாணம்",
+
+    // Regions (Common)
+    "Negombo": "நீர்கொழும்பு", "Gampaha City": "கம்பஹா நகர்", "Kelaniya": "களனி", "Wattala": "வத்தளை", "Ja-Ela": "ஜா-எல",
+    "Colombo Fort": "கொழும்பு கோட்டை", "Pettah": "புறக்கோட்டை", "Borella": "பொறளை", "Cinnamon Gardens": "கறுவாத் தோட்டம்", "Maradana": "மருதானை",
+    "Havelock Town": "ஹவ்லொக் டவுன்", "Wellawatte": "வெள்ளவத்தை", "Dehiwala": "தெகிவளை", "Mount Lavinia": "கல்கிசை", "Moratuwa": "மொறட்டுவை",
+    "Kotte": "கோட்டை", "Battaramulla": "பத்தரமுல்லை", "Nugegoda": "நுகேகொட", "Maharagama": "மகரகம", "Homagama": "ஹோமாகம",
+    "Puttalam Town": "புத்தளம்", "Chilaw": "சிலாபம்", "Mannar Town": "மன்னார்", "Trincomalee Town": "திருகோணமலை",
+    "Kandy City": "கண்டி", "Jaffna Town": "யாழ்ப்பாணம்",
+
+    // Categories
+    "Food": "உணவு",
+    "Water": "தண்ணீர்",
+    "Medical Supplies": "மருத்துவ பொருட்கள்",
+    "Clothing": "உடை",
+    "Shelter": "தங்குமிடம்",
+    "Hygiene": "சுகாதாரம்",
+    "Other": "மற்றவை",
+
+    // Units
+    "units": "அலகுகள்",
+    "packs": "பொதிகள்",
+    "kg": "கி.கி",
+    "liters": "லீட்டர்",
+    "boxes": "பெட்டிகள்",
+    "pairs": "சோடிகள்",
+    "sets": "தொகுப்புகள்"
   }
 };
