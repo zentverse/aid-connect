@@ -10,7 +10,13 @@ export const translations = {
     "nav_request": "Request",
     "nav_status": "My Status",
     "nav_dashboard": "Dashboard",
+    "nav_contribute": "Contribute",
     "footer_text": "Community Relief Coordination.",
+
+    // Contribute Modal
+    "contrib_title": "Contribute to AidConnect",
+    "btn_report_bug": "Report a Bug",
+    "btn_support_dev": "Support the Dev Team",
 
     // Landing Page
     "hero_title_1": "Emergency Aid",
@@ -137,7 +143,12 @@ export const translations = {
     "nav_request": "ඉල්ලීම්",
     "nav_status": "මගේ තත්ත්වය",
     "nav_dashboard": "දත්ත පුවරුව",
+    "nav_contribute": "දායක වන්න",
     "footer_text": "ප්‍රජා සහන සම්බන්ධීකරණය.",
+    
+    "contrib_title": "AidConnect වෙත දායක වන්න",
+    "btn_report_bug": "දෝෂයක් වාර්තා කරන්න",
+    "btn_support_dev": "සංවර්ධක කණ්ඩායමට සහාය වන්න",
 
     "hero_title_1": "හදිසි ආධාර",
     "hero_title_2": "සම්බන්ධීකරණය",
@@ -261,7 +272,12 @@ export const translations = {
     "nav_request": "கோரிக்கை",
     "nav_status": "எனது நிலை",
     "nav_dashboard": "முகப்பு",
+    "nav_contribute": "பங்களிப்பு",
     "footer_text": "சமூக நிவாரண ஒருங்கிணைப்பு.",
+    
+    "contrib_title": "AidConnect க்கு பங்களிக்கவும்",
+    "btn_report_bug": "பிழையைப் புகாரளிக்கவும்",
+    "btn_support_dev": "உருவாக்குநர்களுக்கு ஆதரவளிக்கவும்",
 
     "hero_title_1": "அவசர உதவி",
     "hero_title_2": "ஒருங்கிணைப்பு",
