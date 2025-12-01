@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AidCategory, AidItem, AidRequest, RequestStatus } from '../types';
 import { DISTRICTS, REGIONS, CATEGORIES, UNITS } from '../constants';
-import { extractAidItems, generateItemKeywords } from '../services/geminiService';
+import { extractSmartFillData, generateItemKeywords } from '../services/geminiService';
 import { saveRequest } from '../services/storageService';
 
 export const RequestAidPage: React.FC = () => {
@@ -201,27 +201,55 @@ export const RequestAidPage: React.FC = () => {
     if (!naturalInput.trim()) return;
     setAiLoading(true);
     try {
-      const extracted = await extractAidItems(naturalInput);
-      if (extracted.length > 0) {
-        const newItems: AidItem[] = extracted.map(e => ({
-          id: Math.random().toString(36).substr(2, 9),
-          name: e.name,
-          category: e.category,
-          quantityNeeded: e.quantity || 1,
-          quantityReceived: 0,
-          unit: e.unit || 'units',
-          keywords: e.keywords || []
+      // Use the new comprehensive smart fill function
+      const result = await extractSmartFillData(naturalInput);
+      
+      if (result) {
+        // 1. Fill Personal Info & Notes
+        setFormData(prev => ({
+          ...prev,
+          fullName: result.fullName || prev.fullName,
+          nic: result.nic || prev.nic,
+          contactNumber: result.contactNumber || prev.contactNumber,
+          notes: result.notes || prev.notes
         }));
-        setItems(newItems);
-        const newErrors = { ...errors };
-        Object.keys(newErrors).forEach(key => {
-          if (key.startsWith('item_')) delete newErrors[key];
-        });
-        setErrors(newErrors);
+
+        // 2. Fill Location (Smart Match)
+        if (result.district) {
+          // Find matching district case-insensitively
+          const matchedDistrict = DISTRICTS.find(d => d.toLowerCase() === result.district?.toLowerCase());
+          if (matchedDistrict) {
+            setSelectedDistrict(matchedDistrict);
+            
+            // If we have a region, try to set it too
+            if (result.region) {
+              // Note: Ideally we'd check if region exists in the district's list, but we can set it for now
+              // and let the user correct it if needed, or check validity.
+               setSelectedRegion(result.region);
+            }
+          }
+        }
+
+        // 3. Fill Items
+        if (result.items && result.items.length > 0) {
+          const newItems: AidItem[] = result.items.map(e => ({
+            id: Math.random().toString(36).substr(2, 9),
+            name: e.name,
+            category: e.category as AidCategory,
+            quantityNeeded: e.quantity || 1,
+            quantityReceived: 0,
+            unit: e.unit || 'units',
+            keywords: e.keywords || []
+          }));
+          setItems(newItems);
+        }
+
+        // Clear related errors
+        setErrors({});
       }
     } catch (err) {
       console.error(err);
-      alert('Failed to interpret text. Please enter items manually.');
+      alert('Failed to interpret text completely. Partial data may be filled.');
     } finally {
       setAiLoading(false);
     }
@@ -272,13 +300,13 @@ export const RequestAidPage: React.FC = () => {
             <div className="flex-1">
               <h3 className="font-semibold text-indigo-900 mb-2">Use AI Smart Fill</h3>
               <p className="text-sm text-indigo-700 mb-3">
-                Describe what you need in plain text, and AI will fill the item list for you.
+                Describe your situation in detail (Name, ID, Location, Contact, Needs), and AI will fill the entire form for you.
               </p>
               <div className="flex gap-2">
                 <textarea
                   value={naturalInput}
                   onChange={(e) => setNaturalInput(e.target.value)}
-                  placeholder="e.g. We are a family of 4 stranded in Puttalam Town. We need 10 liters of water, some rice, and baby formula."
+                  placeholder="e.g. My name is John Doe, ID 200012345678. I am in Puttalam Town with my family. Contact me at 0771234567. We urgently need 10 liters of water and baby formula."
                   className="flex-1 bg-white text-slate-900 p-3 text-sm rounded-lg border border-indigo-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-h-[80px]"
                 />
               </div>
@@ -289,7 +317,7 @@ export const RequestAidPage: React.FC = () => {
                   className="mt-3 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2"
                 >
                   {aiLoading ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-bolt"></i>}
-                  Auto-fill Items
+                  Auto-fill Form
                 </button>
             </div>
           </div>

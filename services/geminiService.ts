@@ -1,6 +1,7 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 import { AidCategory } from "../types";
+import { DISTRICTS } from "../constants";
 
 // Helper to get API key safely
 const getApiKey = () => {
@@ -14,6 +15,16 @@ export interface ExtractedItem {
   unit: string;
   category: AidCategory;
   keywords: string[];
+}
+
+export interface ExtractedFormData {
+  fullName?: string;
+  nic?: string;
+  contactNumber?: string;
+  district?: string;
+  region?: string;
+  items: ExtractedItem[];
+  notes?: string;
 }
 
 export const extractAidItems = async (text: string): Promise<ExtractedItem[]> => {
@@ -57,6 +68,68 @@ export const extractAidItems = async (text: string): Promise<ExtractedItem[]> =>
   } catch (error) {
     console.error("Gemini Smart Fill Error:", error);
     return [];
+  }
+};
+
+export const extractSmartFillData = async (text: string): Promise<ExtractedFormData | null> => {
+  try {
+    const ai = new GoogleGenAI({ apiKey: getApiKey() });
+    
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: `You are an AI assistant for a disaster relief app. Extract structured data from the following help request text.
+      
+      Fields to extract:
+      1. Full Name
+      2. NIC (National Identity Card Number)
+      3. Contact Number
+      4. District (Must be one of: ${DISTRICTS.join(', ')})
+      5. Region (City or Town name)
+      6. Notes (Any extra context, medical needs, or directions)
+      7. Items (List of requested aid items with category, quantity, unit, and keywords)
+
+      For items, map category to one of: ${Object.values(AidCategory).join(', ')}.
+      Generate 5 specific descriptive keywords for each item.
+
+      Text: "${text}"`,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            fullName: { type: Type.STRING },
+            nic: { type: Type.STRING },
+            contactNumber: { type: Type.STRING },
+            district: { type: Type.STRING },
+            region: { type: Type.STRING },
+            notes: { type: Type.STRING },
+            items: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  name: { type: Type.STRING },
+                  quantity: { type: Type.NUMBER },
+                  unit: { type: Type.STRING },
+                  category: { type: Type.STRING },
+                  keywords: { type: Type.ARRAY, items: { type: Type.STRING } }
+                },
+                required: ["name", "quantity", "category", "keywords"]
+              }
+            }
+          },
+          required: ["items"]
+        }
+      }
+    });
+
+    if (response.text) {
+      return JSON.parse(response.text) as ExtractedFormData;
+    }
+    return null;
+  } catch (error) {
+    console.error("Gemini Full Smart Fill Error:", error);
+    return null;
   }
 };
 
