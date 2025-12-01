@@ -59,12 +59,22 @@ export const DonorDashboardPage: React.FC = () => {
   const [report, setReport] = useState<string>('');
   const [loadingReport, setLoadingReport] = useState(false);
   const [filterLocation, setFilterLocation] = useState('All');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const allRequests = getRequests();
-    setRequests(allRequests);
-    calculateStats(allRequests);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const fetchData = async () => {
+      try {
+        const allRequests = await getRequests();
+        setRequests(allRequests);
+        calculateStats(allRequests);
+      } catch (err) {
+        console.error("Failed to load dashboard data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchData();
   }, []);
 
   const calculateStats = (data: AidRequest[]) => {
@@ -159,7 +169,7 @@ export const DonorDashboardPage: React.FC = () => {
 
   const pendingFiltered = filteredRequests.filter(r => r.status !== RequestStatus.FULFILLED);
 
-  if (!stats) return <div className="p-8 text-center">Loading Data...</div>;
+  if (isLoading || !stats) return <div className="p-8 text-center text-slate-500">Loading Dashboard Data...</div>;
 
   return (
     <div className="space-y-8">

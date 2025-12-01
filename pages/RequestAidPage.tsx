@@ -227,12 +227,14 @@ export const RequestAidPage: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) {
       return;
     }
+
+    setLoading(true);
 
     const newRequest: AidRequest = {
       id: `req_${Date.now()}`,
@@ -243,13 +245,14 @@ export const RequestAidPage: React.FC = () => {
       updatedAt: Date.now()
     };
 
-    saveRequest(newRequest);
-    setLoading(true);
-    
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      await saveRequest(newRequest);
       navigate('/status', { state: { nic: formData.nic } });
-    }, 1000);
+    } catch (err) {
+      alert("There was an error saving your request. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

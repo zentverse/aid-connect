@@ -1,33 +1,85 @@
 import { AidRequest, RequestStatus } from "../types";
+import { supabase } from "./supabaseClient";
 
-const STORAGE_KEY = 'aid_connect_requests';
+// Helper to map DB snake_case to TS camelCase
+const mapFromDb = (row: any): AidRequest => ({
+  id: row.id,
+  nic: row.nic,
+  fullName: row.full_name,
+  contactNumber: row.contact_number,
+  extraContactNumber: row.extra_contact_number,
+  location: row.location,
+  items: row.items, // JSONB structure matches AidItem[]
+  status: row.status as RequestStatus,
+  createdAt: Number(row.created_at),
+  updatedAt: Number(row.updated_at),
+  notes: row.notes
+});
 
-export const getRequests = (): AidRequest[] => {
-  const data = localStorage.getItem(STORAGE_KEY);
-  return data ? JSON.parse(data) : [];
-};
+// Helper to map TS camelCase to DB snake_case
+const mapToDb = (req: AidRequest) => ({
+  id: req.id,
+  nic: req.nic,
+  full_name: req.fullName,
+  contact_number: req.contactNumber,
+  extra_contact_number: req.extraContactNumber,
+  location: req.location,
+  items: req.items,
+  status: req.status,
+  created_at: req.createdAt,
+  updated_at: req.updatedAt,
+  notes: req.notes
+});
 
-export const saveRequest = (request: AidRequest): void => {
-  const requests = getRequests();
-  const existingIndex = requests.findIndex(r => r.id === request.id);
-  
-  if (existingIndex >= 0) {
-    requests[existingIndex] = request;
-  } else {
-    requests.push(request);
+export const getRequests = async (): Promise<AidRequest[]> => {
+  const { data, error } = await supabase
+    .from('aid_requests')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching requests:', error);
+    return [];
   }
-  
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(requests));
+  return data.map(mapFromDb);
 };
 
-export const getRequestByNic = (nic: string): AidRequest[] => {
-  const requests = getRequests();
-  return requests.filter(r => r.nic.toLowerCase() === nic.toLowerCase());
+export const saveRequest = async (request: AidRequest): Promise<void> => {
+  const dbPayload = mapToDb(request);
+  const { error } = await supabase
+    .from('aid_requests')
+    .upsert(dbPayload);
+
+  if (error) {
+    console.error('Error saving request:', error);
+    throw error;
+  }
 };
 
-export const getRequestById = (id: string): AidRequest | undefined => {
-  const requests = getRequests();
-  return requests.find(r => r.id === id);
+export const getRequestByNic = async (nic: string): Promise<AidRequest[]> => {
+  const { data, error } = await supabase
+    .from('aid_requests')
+    .select('*')
+    .ilike('nic', nic); // Case-insensitive search
+
+  if (error) {
+    console.error('Error fetching by NIC:', error);
+    return [];
+  }
+  return data.map(mapFromDb);
+};
+
+export const getRequestById = async (id: string): Promise<AidRequest | undefined> => {
+  const { data, error } = await supabase
+    .from('aid_requests')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error || !data) {
+    return undefined;
+  }
+  return mapFromDb(data);
 };
 
 export const calculateStatus = (request: AidRequest): RequestStatus => {
@@ -38,95 +90,3 @@ export const calculateStatus = (request: AidRequest): RequestStatus => {
   if (totalReceived > 0) return RequestStatus.PARTIALLY_FULFILLED;
   return RequestStatus.PENDING;
 };
-
-// Seed some data if empty for demo purposes
-const seedData = () => {
-  if (getRequests().length === 0) {
-    const mockData: AidRequest[] = [
-      {
-        id: 'req_123',
-        nic: '90001V',
-        fullName: 'Sarah Connor',
-        contactNumber: '555-0101',
-        location: 'Colombo - Dehiwala',
-        items: [
-          { 
-            id: 'i1', 
-            name: 'Water Bottles', 
-            category: 'Water' as any, 
-            quantityNeeded: 20, 
-            quantityReceived: 5, 
-            unit: 'liters',
-            keywords: ['Drinking Water', 'Bottled', 'Hydration'] 
-          },
-          { 
-            id: 'i2', 
-            name: 'Rice', 
-            category: 'Food' as any, 
-            quantityNeeded: 10, 
-            quantityReceived: 0, 
-            unit: 'kg',
-            keywords: ['Dry Rations', 'Carbohydrates', 'Staple Food']
-          }
-        ],
-        status: RequestStatus.PARTIALLY_FULFILLED,
-        createdAt: Date.now() - 86400000,
-        updatedAt: Date.now()
-      },
-      {
-        id: 'req_124',
-        nic: '90002V',
-        fullName: 'John Smith',
-        contactNumber: '555-0102',
-        location: 'Kandy - Peradeniya',
-        items: [
-          { 
-            id: 'i3', 
-            name: 'Bandages', 
-            category: 'Medical Supplies' as any, 
-            quantityNeeded: 5, 
-            quantityReceived: 0, 
-            unit: 'packs',
-            keywords: ['First Aid', 'Sterile', 'Wound Care', 'Medical'] 
-          }
-        ],
-        status: RequestStatus.PENDING,
-        createdAt: Date.now() - 172800000,
-        updatedAt: Date.now()
-      },
-      {
-        id: 'req_125',
-        nic: '90003V',
-        fullName: 'Kamal Perera',
-        contactNumber: '077-1234567',
-        location: 'Gampaha - Negombo',
-        items: [
-          { 
-            id: 'i4', 
-            name: 'Milk Powder', 
-            category: 'Food' as any, 
-            quantityNeeded: 5, 
-            quantityReceived: 1, 
-            unit: 'packs',
-            keywords: ['Infant', 'Dairy', 'Nutrition', 'Dry Rations'] 
-          },
-          { 
-            id: 'i5', 
-            name: 'Baby Soap', 
-            category: 'Hygiene' as any, 
-            quantityNeeded: 2, 
-            quantityReceived: 0, 
-            unit: 'units',
-            keywords: ['Infant Care', 'Sanitation', 'Cleaning'] 
-          }
-        ],
-        status: RequestStatus.PENDING,
-        createdAt: Date.now() - 43200000,
-        updatedAt: Date.now()
-      }
-    ];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(mockData));
-  }
-};
-
-seedData(); // Initialize on load

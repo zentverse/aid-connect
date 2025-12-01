@@ -9,6 +9,7 @@ export const UpdateStatusPage: React.FC = () => {
   const [requests, setRequests] = useState<AidRequest[]>([]);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // Auto-search if redirected with NIC
   useEffect(() => {
@@ -19,10 +20,17 @@ export const UpdateStatusPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.state]);
 
-  const handleSearch = (nicToSearch: string) => {
-    const results = getRequestByNic(nicToSearch);
-    setRequests(results);
-    setSearched(true);
+  const handleSearch = async (nicToSearch: string) => {
+    setLoading(true);
+    try {
+      const results = await getRequestByNic(nicToSearch);
+      setRequests(results);
+      setSearched(true);
+    } catch (err) {
+      setError('Failed to fetch requests.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onSearchSubmit = (e: React.FormEvent) => {
@@ -43,7 +51,7 @@ export const UpdateStatusPage: React.FC = () => {
     handleSearch(searchNic);
   };
 
-  const handleQuantityReceivedChange = (reqIndex: number, itemId: string, newQty: number) => {
+  const handleQuantityReceivedChange = async (reqIndex: number, itemId: string, newQty: number) => {
     const updatedRequests = [...requests];
     const request = updatedRequests[reqIndex];
     const item = request.items.find(i => i.id === itemId);
@@ -54,8 +62,16 @@ export const UpdateStatusPage: React.FC = () => {
       request.status = calculateStatus(request);
       request.updatedAt = Date.now();
       
-      saveRequest(request);
+      // Optimistic update locally
       setRequests(updatedRequests);
+
+      // Save to Supabase
+      try {
+        await saveRequest(request);
+      } catch (err) {
+        alert("Failed to update quantity.");
+        // Revert could go here, but keeping it simple for now
+      }
     }
   };
 
@@ -89,16 +105,17 @@ export const UpdateStatusPage: React.FC = () => {
             />
             <button 
               type="submit"
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              disabled={loading}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-70"
             >
-              Search
+              {loading ? <i className="fa-solid fa-spinner fa-spin"></i> : 'Search'}
             </button>
           </div>
           {error && <p className="text-red-500 text-sm ml-1">{error}</p>}
         </form>
       </div>
 
-      {searched && requests.length === 0 && !error && (
+      {searched && requests.length === 0 && !error && !loading && (
         <div className="text-center py-12 bg-white rounded-xl border border-slate-200 border-dashed">
           <div className="text-slate-300 text-4xl mb-3"><i className="fa-regular fa-folder-open"></i></div>
           <h3 className="text-lg font-medium text-slate-900">No requests found</h3>
