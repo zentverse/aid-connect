@@ -4,7 +4,7 @@ import { AidCategory } from "../types";
 
 // Helper to get API key safely
 const getApiKey = () => {
-  return process.env.API_KEY || '';
+  return 'AIzaSyCiLaGU0xix59seNgVmuV85QrSkymF0UmY';
 };
 
 // --- Smart Fill ---
