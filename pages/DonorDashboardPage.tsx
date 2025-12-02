@@ -62,12 +62,32 @@ export const DonorDashboardPage: React.FC = () => {
   // From main branch
   const [filterLocation, setFilterLocation] = useState('All');
   const [isLoading, setIsLoading] = useState(true);
+  const [ignoredKeywords, setIgnoredKeywords] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const allRequests = await getRequests();
         setRequests(allRequests);
+
+        // Extract all unique keywords
+        const allKeywords = new Set<string>();
+        allRequests.forEach(r => {
+          r.items.forEach(item => {
+            if (item.keywords) {
+              item.keywords.forEach(k => allKeywords.add(k.toLowerCase()));
+            }
+          });
+        });
+
+        // Identify generic keywords
+        if (allKeywords.size > 0) {
+          import('../services/geminiService').then(async (service) => {
+            const generic = await service.identifyGenericKeywords(Array.from(allKeywords));
+            setIgnoredKeywords(prev => [...prev, ...generic.map(k => k.toLowerCase())]);
+          });
+        }
+
         calculateStats(allRequests);
       } catch (err) {
         console.error("Failed to load dashboard data");
@@ -78,6 +98,13 @@ export const DonorDashboardPage: React.FC = () => {
 
     fetchData();
   }, []);
+
+  // Re-calculate stats when ignoredKeywords change
+  useEffect(() => {
+    if (requests.length > 0) {
+      calculateStats(requests);
+    }
+  }, [ignoredKeywords]);
 
   const calculateStats = (data: AidRequest[]) => {
     const total = data.length;
@@ -95,7 +122,6 @@ export const DonorDashboardPage: React.FC = () => {
         const key = item.category;
         const current = categoryMap.get(key) || { needed: 0, remaining: 0 };
         const itemRemaining = Math.max(0, item.quantityNeeded - item.quantityReceived);
-
         categoryMap.set(key, {
           needed: current.needed + item.quantityNeeded,
           remaining: current.remaining + itemRemaining
@@ -104,7 +130,9 @@ export const DonorDashboardPage: React.FC = () => {
         // Collect keywords from unfulfilled items
         if (r.status !== RequestStatus.FULFILLED && itemRemaining > 0 && item.keywords) {
           item.keywords.forEach(k => {
-            keywordMap.set(k, (keywordMap.get(k) || 0) + 1);
+            if (!ignoredKeywords.includes(k.toLowerCase())) {
+              keywordMap.set(k, (keywordMap.get(k) || 0) + 1);
+            }
           });
         }
       });
@@ -123,18 +151,35 @@ export const DonorDashboardPage: React.FC = () => {
       .sort((a, b) => b.size - a.size)
       .slice(0, 20);
 
-    // Aggregate locations
-    const locMap = new Map<string, number>();
+    // Aggregate locations based on ITEM QUANTITIES
+    const locMap = new Map<string, { totalNeeded: number; unfulfilledNeeded: number }>();
+
     data.forEach(r => {
-      if (r.status !== RequestStatus.FULFILLED) {
-        locMap.set(r.location, (locMap.get(r.location) || 0) + 1);
-      }
+      r.items.forEach(item => {
+        const current = locMap.get(r.location) || { totalNeeded: 0, unfulfilledNeeded: 0 };
+        const itemUnfulfilled = Math.max(0, item.quantityNeeded - item.quantityReceived);
+
+        locMap.set(r.location, {
+          totalNeeded: current.totalNeeded + item.quantityNeeded,
+          unfulfilledNeeded: current.unfulfilledNeeded + itemUnfulfilled
+        });
+      });
     });
 
     const needsByLocation = Array.from(locMap.entries())
-      .map(([location, count]) => ({ location, count }));
+      .map(([location, stats]) => ({ location, count: stats.unfulfilledNeeded }));
 
-    // Calculate Top Urgent Regions (Top 3 by active count)
+    const locationStats = Array.from(locMap.entries())
+      .map(([location, stats]) => ({
+        location,
+        unfulfilled: stats.unfulfilledNeeded,
+        total: stats.totalNeeded,
+        percentage: stats.totalNeeded > 0 ? Math.round((stats.unfulfilledNeeded / stats.totalNeeded) * 100) : 0
+      }))
+      .sort((a, b) => b.percentage - a.percentage)
+      .slice(0, 15);
+
+    // Calculate Top Urgent Regions (Top 3 by unfulfilled count)
     const topUrgentRegions = [...needsByLocation]
       .sort((a, b) => b.count - a.count)
       .slice(0, 3);
@@ -146,11 +191,10 @@ export const DonorDashboardPage: React.FC = () => {
       topNeededItems,
       needsByLocation,
       topUrgentRegions,
-      keywordStats
+      keywordStats,
+      locationStats
     });
   };
-
-
 
   const filteredRequests = filterLocation === 'All' || filterLocation === t('feed_all_loc')
     ? requests
@@ -187,6 +231,10 @@ export const DonorDashboardPage: React.FC = () => {
         location: translateLocation(item.location)
       })),
       topUrgentRegions: stats.topUrgentRegions.map(item => ({
+        ...item,
+        location: translateLocation(item.location)
+      })),
+      locationStats: stats.locationStats.map(item => ({
         ...item,
         location: translateLocation(item.location)
       }))
@@ -231,8 +279,8 @@ export const DonorDashboardPage: React.FC = () => {
           <div className="space-y-2">
             {translatedStats.topUrgentRegions.slice(0, 3).map((item, idx) => (
               <div key={idx} className="flex justify-between items-center text-sm">
-                <span className="text-slate-700 dark:text-slate-200 font-medium truncate max-w-[120px]" title={item.location}>{item.location}</span>
-                <span className="text-red-600 dark:text-red-400 font-bold">{item.count} {t('lbl_requests')}</span>
+                <span className="text-slate-700 dark:text-slate-200 font-medium truncate flex-1 min-w-0 pr-2" title={item.location}>{item.location}</span>
+                <span className="text-red-600 dark:text-red-400 font-bold whitespace-nowrap">{item.count} {t('lbl_requests')}</span>
               </div>
             ))}
             {translatedStats.topUrgentRegions.length === 0 && <span className="text-slate-400 dark:text-slate-500 italic">No data available</span>}
@@ -245,8 +293,8 @@ export const DonorDashboardPage: React.FC = () => {
           <div className="space-y-2">
             {translatedStats.topNeededItems.slice(0, 3).map((item, idx) => (
               <div key={idx} className="flex justify-between items-center text-sm">
-                <span className="text-slate-700 dark:text-slate-200 font-medium">{item.name}</span>
-                <span className="text-blue-600 dark:text-blue-400 font-bold">{item.count}% {t('lbl_unfulfilled')}</span>
+                <span className="text-slate-700 dark:text-slate-200 font-medium truncate flex-1 min-w-0 pr-2" title={item.name}>{item.name}</span>
+                <span className="text-blue-600 dark:text-blue-400 font-bold whitespace-nowrap">{item.count}% {t('lbl_unfulfilled')}</span>
               </div>
             ))}
             {translatedStats.topNeededItems.length === 0 && <span className="text-slate-400 dark:text-slate-500 italic">No data available</span>}
@@ -281,28 +329,29 @@ export const DonorDashboardPage: React.FC = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Pie Chart */}
+        {/* Location Bar Chart (Replaces Pie Chart) */}
         <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm h-80 transition-colors">
           <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4">{t('chart_location')}</h3>
           <ResponsiveContainer width="100%" height="90%">
-            <PieChart>
-              <Pie
-                data={translatedStats.needsByLocation}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={80}
-                paddingAngle={5}
-                dataKey="count"
-                nameKey="location"
-              >
-                {translatedStats.needsByLocation.map((entry, index) => (
+            <BarChart data={translatedStats.locationStats} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" strokeOpacity={0.5} />
+              <XAxis type="number" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} unit="%" domain={[0, 100]} />
+              <YAxis dataKey="location" type="category" width={100} axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} />
+              <Tooltip
+                cursor={{ fill: '#f1f5f9', opacity: 0.1 }}
+                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: '#fff' }}
+                itemStyle={{ color: '#1e293b' }}
+                formatter={(value: number, name: string, props: any) => [
+                  `${value}%`,
+                  `Unfulfilled (${props.payload.unfulfilled}/${props.payload.total})`
+                ]}
+              />
+              <Bar dataKey="percentage" fill="#10b981" radius={[0, 4, 4, 0]}>
+                {translatedStats.locationStats.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
-              </Pie>
-              <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} itemStyle={{ color: '#1e293b' }} />
-              <Legend verticalAlign="bottom" height={36} />
-            </PieChart>
+              </Bar>
+            </BarChart>
           </ResponsiveContainer>
         </div>
 
