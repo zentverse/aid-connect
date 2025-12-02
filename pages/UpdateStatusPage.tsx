@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AidRequest, RequestStatus } from '../types';
-import { getRequestByNic, saveRequest, calculateStatus } from '../services/storageService';
+import { getRequestByNic, saveRequest, calculateStatus, deleteRequest } from '../services/storageService';
 import { useLanguage } from '../contexts/LanguageContext';
 import { TranslationKey } from '../translations';
 
@@ -13,6 +13,9 @@ export const UpdateStatusPage: React.FC = () => {
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [requestToDelete, setRequestToDelete] = useState<{ index: number; request: AidRequest } | null>(null);
+  const [deleteMessage, setDeleteMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Auto-search if redirected with NIC
   useEffect(() => {
@@ -20,7 +23,7 @@ export const UpdateStatusPage: React.FC = () => {
       setSearchNic(location.state.nic);
       handleSearch(location.state.nic);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslin Disable next line react-hooks/exhaustive-deps
   }, [location.state]);
 
   const handleSearch = async (nicToSearch: string) => {
@@ -44,7 +47,7 @@ export const UpdateStatusPage: React.FC = () => {
       setError('Please enter a NIC or ID Number');
       return;
     }
-    
+
     if (!nicRegex.test(searchNic.trim())) {
       setError('Invalid NIC. Must be 12 digits or 9 digits + V/X.');
       return;
@@ -58,13 +61,13 @@ export const UpdateStatusPage: React.FC = () => {
     const updatedRequests = [...requests];
     const request = updatedRequests[reqIndex];
     const item = request.items.find(i => i.id === itemId);
-    
+
     if (item) {
       item.quantityReceived = Math.min(Math.max(0, newQty), item.quantityNeeded); // Clamp between 0 and needed
       // Recalculate status
       request.status = calculateStatus(request);
       request.updatedAt = Date.now();
-      
+
       // Optimistic update locally
       setRequests(updatedRequests);
 
@@ -76,6 +79,39 @@ export const UpdateStatusPage: React.FC = () => {
         // Revert could go here, but keeping it simple for now
       }
     }
+  };
+
+  const handleDeleteClick = (reqIndex: number, request: AidRequest) => {
+    setRequestToDelete({ index: reqIndex, request });
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!requestToDelete) return;
+
+    try {
+      await deleteRequest(requestToDelete.request.id);
+
+      // Remove from local state
+      const updatedRequests = requests.filter((_, idx) => idx !== requestToDelete.index);
+      setRequests(updatedRequests);
+
+      // Show success message
+      setDeleteMessage({ type: 'success', text: t('msg_delete_success') });
+      setTimeout(() => setDeleteMessage(null), 5000);
+    } catch (err) {
+      console.error('Delete error:', err);
+      setDeleteMessage({ type: 'error', text: t('msg_delete_error') });
+      setTimeout(() => setDeleteMessage(null), 5000);
+    } finally {
+      setShowDeleteModal(false);
+      setRequestToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setRequestToDelete(null);
   };
 
   const getStatusColor = (status: RequestStatus) => {
@@ -91,14 +127,14 @@ export const UpdateStatusPage: React.FC = () => {
     if (!loc) return '';
     const parts = loc.split(' - ');
     if (parts.length >= 1) {
-       // Attempt to translate the District part
-       const districtTranslated = t(parts[0] as TranslationKey);
-       // If there's a region, translate it too
-       if (parts.length > 1) {
-         const regionTranslated = t(parts[1] as TranslationKey);
-         return `${districtTranslated} - ${regionTranslated}`;
-       }
-       return districtTranslated;
+      // Attempt to translate the District part
+      const districtTranslated = t(parts[0] as TranslationKey);
+      // If there's a region, translate it too
+      if (parts.length > 1) {
+        const regionTranslated = t(parts[1] as TranslationKey);
+        return `${districtTranslated} - ${regionTranslated}`;
+      }
+      return districtTranslated;
     }
     return loc;
   };
@@ -107,7 +143,7 @@ export const UpdateStatusPage: React.FC = () => {
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="text-center max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{t('status_title')}</h1>
-        <p className="text-slate-500 dark:text-slate-400">{t('status_subtitle')}</p>
+        <p className="text-slate-500 dark:text-slate-40">{t('status_subtitle')}</p>
       </div>
 
       <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors">
@@ -123,7 +159,7 @@ export const UpdateStatusPage: React.FC = () => {
               placeholder="e.g. 200013501678 or 660581758v"
               className={`flex-1 bg-white dark:bg-slate-700 text-slate-900 dark:text-white p-3 rounded-lg border outline-none focus:ring-2 ${error ? 'border-red-500 focus:ring-red-200' : 'border-slate-300 dark:border-slate-600 focus:ring-blue-500'}`}
             />
-            <button 
+            <button
               type="submit"
               disabled={loading}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-70"
@@ -134,6 +170,18 @@ export const UpdateStatusPage: React.FC = () => {
           {error && <p className="text-red-500 text-sm ml-1">{error}</p>}
         </form>
       </div>
+
+      {deleteMessage && (
+        <div className={`p-4 rounded-lg border ${deleteMessage.type === 'success'
+            ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300'
+            : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300'
+          }`}>
+          <div className="flex items-center gap-2">
+            <i className={`fa-solid ${deleteMessage.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}`}></i>
+            <span>{deleteMessage.text}</span>
+          </div>
+        </div>
+      )}
 
       {searched && requests.length === 0 && !error && !loading && (
         <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 border-dashed">
@@ -155,18 +203,27 @@ export const UpdateStatusPage: React.FC = () => {
                   </span>
                 </div>
                 <div className="text-sm text-slate-500 dark:text-slate-400 flex gap-4">
-                   <span><i className="fa-solid fa-location-dot mr-1"></i> {translateLocation(req.location)}</span>
-                   <span><i className="fa-regular fa-clock mr-1"></i> {new Date(req.createdAt).toLocaleDateString()}</span>
+                  <span><i className="fa-solid fa-location-dot mr-1"></i> {translateLocation(req.location)}</span>
+                  <span><i className="fa-regular fa-clock mr-1"></i> {new Date(req.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
-              <div className="text-right hidden sm:block">
-                 <div className="text-xs text-slate-400 dark:text-slate-500">{t('lbl_req_id')}</div>
-                 <div className="font-mono text-slate-600 dark:text-slate-300">{req.id}</div>
+              <div className="flex items-center gap-2">
+                <div className="text-right hidden sm:block">
+                  <div className="text-xs text-slate-400 dark:text-slate-500">{t('lbl_req_id')}</div>
+                  <div className="font-mono text-slate-600 dark:text-slate-300">{req.id}</div>
+                </div>
+                <button
+                  onClick={() => handleDeleteClick(reqIndex, req)}
+                  className="px-3 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors border border-red-200 dark:border-red-800"
+                  title={t('btn_delete_request')}
+                >
+                  <i className="fa-solid fa-trash"></i>
+                </button>
               </div>
             </div>
 
             <div className="p-6">
-              <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-4">{t('lbl_items_req')}</h4>
+              <h4 className=" font-medium text-slate-700 dark:text-slate-300 mb-4">{t('lbl_items_req')}</h4>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
                   <thead className="text-xs text-slate-500 dark:text-slate-400 uppercase bg-slate-50/50 dark:bg-slate-900/50">
@@ -188,24 +245,24 @@ export const UpdateStatusPage: React.FC = () => {
                           <span className={`font-bold ${item.quantityReceived >= item.quantityNeeded ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
                             {item.quantityReceived}
                           </span>
-                           <span className="text-slate-400 dark:text-slate-500 text-xs ml-1">{t(item.unit as TranslationKey)}</span>
+                          <span className="text-slate-400 dark:text-slate-500 text-xs ml-1">{t(item.unit as TranslationKey)}</span>
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex items-center justify-end gap-2">
-                             <button
-                               onClick={() => handleQuantityReceivedChange(reqIndex, item.id, item.quantityReceived + 1)}
-                               disabled={item.quantityReceived >= item.quantityNeeded}
-                               className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                             >
-                               <i className="fa-solid fa-plus"></i>
-                             </button>
-                             <button
-                               onClick={() => handleQuantityReceivedChange(reqIndex, item.id, item.quantityReceived - 1)}
-                               disabled={item.quantityReceived <= 0}
-                               className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                             >
-                               <i className="fa-solid fa-minus"></i>
-                             </button>
+                            <button
+                              onClick={() => handleQuantityReceivedChange(reqIndex, item.id, item.quantityReceived + 1)}
+                              disabled={item.quantityReceived >= item.quantityNeeded}
+                              className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            >
+                              <i className="fa-solid fa-plus"></i>
+                            </button>
+                            <button
+                              onClick={() => handleQuantityReceivedChange(reqIndex, item.id, item.quantityReceived - 1)}
+                              disabled={item.quantityReceived <= 0}
+                              className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            >
+                              <i className="fa-solid fa-minus"></i>
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -220,6 +277,47 @@ export const UpdateStatusPage: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && requestToDelete && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-700">
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                  <i className="fa-solid fa-exclamation-triangle text-red-600 dark:text-red-400 text-xl"></i>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">{t('confirm_delete_title')}</h3>
+              </div>
+
+              <p className="text-slate-600 dark:text-slate-300 mb-4">
+                {t('confirm_delete_message')}
+              </p>
+
+              <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg mb-6">
+                <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">{t('lbl_fullname')}:</div>
+                <div className="font-semibold text-slate-900 dark:text-white">{requestToDelete.request.fullName}</div>
+                <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">ID: {requestToDelete.request.id}</div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handleCancelDelete}
+                  className="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                >
+                  {t('btn_cancel')}
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors"
+                >
+                  {t('btn_confirm_delete')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -82,6 +82,18 @@ export const getRequestById = async (id: string): Promise<AidRequest | undefined
   return mapFromDb(data);
 };
 
+export const deleteRequest = async (requestId: string): Promise<void> => {
+  const { error } = await supabase
+    .from('aid_requests')
+    .delete()
+    .eq('id', requestId);
+
+  if (error) {
+    console.error('Error deleting request:', error);
+    throw error;
+  }
+};
+
 export const calculateStatus = (request: AidRequest): RequestStatus => {
   const totalNeeded = request.items.reduce((sum, item) => sum + item.quantityNeeded, 0);
   const totalReceived = request.items.reduce((sum, item) => sum + item.quantityReceived, 0);
