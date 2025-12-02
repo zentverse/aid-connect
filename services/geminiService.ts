@@ -5,7 +5,7 @@ import { DISTRICTS } from "../constants";
 
 // Helper to get API key safely
 const getApiKey = () => {
-  return 'AIzaSyCiLaGU0xix59seNgVmuV85QrSkymF0UmY';
+  return import.meta.env.VITE_GEMINI_API_KEY;
 };
 
 // --- Smart Fill ---
@@ -30,9 +30,9 @@ export interface ExtractedFormData {
 export const extractAidItems = async (text: string): Promise<ExtractedItem[]> => {
   try {
     const ai = new GoogleGenAI({ apiKey: getApiKey() });
-    
+
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash",
       contents: `Extract aid items from the following request text. Map them to the closest category from this list: ${Object.values(AidCategory).join(', ')}. 
       For each item, also generate 5 specific and descriptive keywords or tags. 
       Avoid generic single adjectives (e.g., use "Casual Wear" instead of "Casual", "Dry Rations" instead of "Dry"). 
@@ -49,10 +49,10 @@ export const extractAidItems = async (text: string): Promise<ExtractedItem[]> =>
               quantity: { type: Type.NUMBER, description: "Numeric quantity" },
               unit: { type: Type.STRING, description: "Unit of measurement (e.g. kg, packs, liters)" },
               category: { type: Type.STRING, description: "One of the provided categories" },
-              keywords: { 
-                type: Type.ARRAY, 
+              keywords: {
+                type: Type.ARRAY,
                 items: { type: Type.STRING },
-                description: "5 specific and descriptive keywords/tags" 
+                description: "5 specific and descriptive keywords/tags"
               }
             },
             required: ["name", "quantity", "category", "keywords"]
@@ -74,9 +74,9 @@ export const extractAidItems = async (text: string): Promise<ExtractedItem[]> =>
 export const extractSmartFillData = async (text: string): Promise<ExtractedFormData | null> => {
   try {
     const ai = new GoogleGenAI({ apiKey: getApiKey() });
-    
+
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash",
       contents: `You are an AI assistant for a disaster relief app. Extract structured data from the following help request text.
       
       Fields to extract:
@@ -137,9 +137,9 @@ export const extractSmartFillData = async (text: string): Promise<ExtractedFormD
 export const generateItemKeywords = async (itemName: string, category: string): Promise<string[]> => {
   try {
     const ai = new GoogleGenAI({ apiKey: getApiKey() });
-    
+
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash",
       contents: `Generate 5 specific and descriptive keywords or tags for the aid item "${itemName}" which is in the category "${category}". 
       Avoid generic single adjectives (e.g., use "Casual Wear" instead of "Casual", "Dry Rations" instead of "Dry"). 
       Focus on specific types, synonyms, or functional attributes that help define the item clearly for donors and logistics.
@@ -167,9 +167,9 @@ export const generateItemKeywords = async (itemName: string, category: string): 
 export const generateSituationReport = async (requestsJson: string): Promise<string> => {
   try {
     const ai = new GoogleGenAI({ apiKey: getApiKey() });
-    
+
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.0-flash",
       contents: `Here is a dataset of aid requests in JSON format. Generate a concise, 3-paragraph executive summary for donors. 
       Paragraph 1: Overview of the most critical needs (high quantity items).
       Paragraph 2: Location-based analysis (which areas are suffering most).
