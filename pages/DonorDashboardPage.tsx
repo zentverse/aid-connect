@@ -25,18 +25,18 @@ const CustomizedTreemapContent = (props: any) => {
           strokeOpacity: 1,
         }}
       />
-      {width > 40 && height > 20 && (
+      {width > 35 && height > 20 && (
         <text
           x={x + width / 2}
           y={y + height / 2}
           textAnchor="middle"
           fill="#fff"
-          fontSize={12}
+          fontSize={width < 90 ? 9 : 12}
           fontWeight="500"
           dy={4}
           style={{ textShadow: '0px 1px 2px rgba(0,0,0,0.3)', pointerEvents: 'none' }}
         >
-          {name}
+          {name.length > width / 9 ? `${name.substring(0, Math.floor(width / 9))}..` : name}
         </text>
       )}
     </g>
@@ -312,7 +312,7 @@ export const DonorDashboardPage: React.FC = () => {
           <ResponsiveContainer width="100%" height="90%">
             <BarChart data={translatedStats.topNeededItems}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" strokeOpacity={0.5} />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} interval={0} tickFormatter={(val) => val.length > 8 ? val.slice(0, 8) + '...' : val} />
               <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} unit="%" domain={[0, 100]} />
               <Tooltip
                 cursor={{ fill: '#f1f5f9', opacity: 0.1 }}
@@ -336,7 +336,7 @@ export const DonorDashboardPage: React.FC = () => {
             <BarChart data={translatedStats.locationStats} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" strokeOpacity={0.5} />
               <XAxis type="number" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} unit="%" domain={[0, 100]} />
-              <YAxis dataKey="location" type="category" width={100} axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} />
+              <YAxis dataKey="location" type="category" width={140} axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} />
               <Tooltip
                 cursor={{ fill: '#f1f5f9', opacity: 0.1 }}
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: '#fff' }}
@@ -395,7 +395,7 @@ export const DonorDashboardPage: React.FC = () => {
             ))}
           </select>
         </div>
-        <div className="divide-y divide-slate-100 dark:divide-slate-700 max-h-[500px] overflow-y-auto">
+        <div className="divide-y divide-slate-100 dark:divide-slate-700 max-h-[500px] overflow-y-auto pb-24">
           {pendingFiltered.length === 0 ? (
             <div className="p-8 text-center text-slate-500 dark:text-slate-400">{t('feed_empty')}</div>
           ) : (
