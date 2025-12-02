@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend, Treemap } from 'recharts';
 import { getRequests } from '../services/storageService';
-import { generateSituationReport } from '../services/geminiService';
+
 import { AidRequest, DashboardStats, RequestStatus } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { TranslationKey } from '../translations';
@@ -58,8 +58,6 @@ export const DonorDashboardPage: React.FC = () => {
   const { t } = useLanguage();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [requests, setRequests] = useState<AidRequest[]>([]);
-  const [report, setReport] = useState<string>('');
-  const [loadingReport, setLoadingReport] = useState(false);
   const [filterLocation, setFilterLocation] = useState('All');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -75,7 +73,7 @@ export const DonorDashboardPage: React.FC = () => {
         setIsLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
 
@@ -86,7 +84,7 @@ export const DonorDashboardPage: React.FC = () => {
 
     // Aggregate items by category to calculate percentage unfulfilled
     const categoryMap = new Map<string, { needed: number; remaining: number }>();
-    
+
     // Aggregate keywords
     const keywordMap = new Map<string, number>();
 
@@ -95,7 +93,7 @@ export const DonorDashboardPage: React.FC = () => {
         const key = item.category;
         const current = categoryMap.get(key) || { needed: 0, remaining: 0 };
         const itemRemaining = Math.max(0, item.quantityNeeded - item.quantityReceived);
-        
+
         categoryMap.set(key, {
           needed: current.needed + item.quantityNeeded,
           remaining: current.remaining + itemRemaining
@@ -104,16 +102,16 @@ export const DonorDashboardPage: React.FC = () => {
         // Collect keywords from unfulfilled items
         if (r.status !== RequestStatus.FULFILLED && itemRemaining > 0 && item.keywords) {
           item.keywords.forEach(k => {
-             keywordMap.set(k, (keywordMap.get(k) || 0) + 1);
+            keywordMap.set(k, (keywordMap.get(k) || 0) + 1);
           });
         }
       });
     });
 
     const topNeededItems = Array.from(categoryMap.entries())
-      .map(([name, stat]) => ({ 
-        name, 
-        count: stat.needed > 0 ? Math.round((stat.remaining / stat.needed) * 100) : 0 
+      .map(([name, stat]) => ({
+        name,
+        count: stat.needed > 0 ? Math.round((stat.remaining / stat.needed) * 100) : 0
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
@@ -127,7 +125,7 @@ export const DonorDashboardPage: React.FC = () => {
     const locMap = new Map<string, number>();
     data.forEach(r => {
       if (r.status !== RequestStatus.FULFILLED) {
-         locMap.set(r.location, (locMap.get(r.location) || 0) + 1);
+        locMap.set(r.location, (locMap.get(r.location) || 0) + 1);
       }
     });
 
@@ -150,23 +148,8 @@ export const DonorDashboardPage: React.FC = () => {
     });
   };
 
-  const handleGenerateReport = async () => {
-    setLoadingReport(true);
-    // Prepare a lightweight JSON for the AI to save tokens
-    const minifiedData = requests
-      .filter(r => r.status !== RequestStatus.FULFILLED)
-      .map(r => ({
-        loc: r.location,
-        items: r.items.map(i => ({ n: i.name, q: i.quantityNeeded - i.quantityReceived, c: i.category }))
-      }));
-    
-    const text = await generateSituationReport(JSON.stringify(minifiedData));
-    setReport(text);
-    setLoadingReport(false);
-  };
-
   const filteredRequests = filterLocation === 'All' || filterLocation === t('feed_all_loc')
-    ? requests 
+    ? requests
     : requests.filter(r => r.location === filterLocation);
 
   const pendingFiltered = filteredRequests.filter(r => r.status !== RequestStatus.FULFILLED);
@@ -176,12 +159,12 @@ export const DonorDashboardPage: React.FC = () => {
     if (!loc) return '';
     const parts = loc.split(' - ');
     if (parts.length >= 1) {
-       const districtTranslated = t(parts[0] as TranslationKey);
-       if (parts.length > 1) {
-         const regionTranslated = t(parts[1] as TranslationKey);
-         return `${districtTranslated} - ${regionTranslated}`;
-       }
-       return districtTranslated;
+      const districtTranslated = t(parts[0] as TranslationKey);
+      if (parts.length > 1) {
+        const regionTranslated = t(parts[1] as TranslationKey);
+        return `${districtTranslated} - ${regionTranslated}`;
+      }
+      return districtTranslated;
     }
     return loc;
   };
@@ -214,17 +197,10 @@ export const DonorDashboardPage: React.FC = () => {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('dash_title')}</h1>
-           <p className="text-slate-500 dark:text-slate-400">{t('dash_subtitle')}</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('dash_title')}</h1>
+          <p className="text-slate-500 dark:text-slate-400">{t('dash_subtitle')}</p>
         </div>
         <div className="flex gap-2">
-           <button 
-             onClick={handleGenerateReport}
-             className="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 shadow-md shadow-purple-100 dark:shadow-none flex items-center gap-2"
-           >
-             {loadingReport ? <i className="fa-solid fa-circle-notch fa-spin"></i> : <i className="fa-solid fa-robot"></i>}
-             {t('btn_gen_report')}
-           </button>
         </div>
       </div>
 
@@ -236,7 +212,7 @@ export const DonorDashboardPage: React.FC = () => {
           <div className="text-3xl font-bold text-slate-800 dark:text-slate-100">{stats.pendingRequests}</div>
           <div className="text-xs text-amber-600 dark:text-amber-400 mt-2 font-medium">{t('kpi_attention')}</div>
         </div>
-        
+
         {/* Card 2: Fulfilled */}
         <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
           <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">{t('kpi_fulfilled')}</div>
@@ -248,13 +224,13 @@ export const DonorDashboardPage: React.FC = () => {
         <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center transition-colors">
           <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">{t('kpi_urgent_regions')}</div>
           <div className="space-y-2">
-             {translatedStats.topUrgentRegions.slice(0, 3).map((item, idx) => (
-               <div key={idx} className="flex justify-between items-center text-sm">
-                 <span className="text-slate-700 dark:text-slate-200 font-medium truncate max-w-[120px]" title={item.location}>{item.location}</span>
-                 <span className="text-red-600 dark:text-red-400 font-bold">{item.count} {t('lbl_requests')}</span>
-               </div>
-             ))}
-             {translatedStats.topUrgentRegions.length === 0 && <span className="text-slate-400 dark:text-slate-500 italic">No data available</span>}
+            {translatedStats.topUrgentRegions.slice(0, 3).map((item, idx) => (
+              <div key={idx} className="flex justify-between items-center text-sm">
+                <span className="text-slate-700 dark:text-slate-200 font-medium truncate max-w-[120px]" title={item.location}>{item.location}</span>
+                <span className="text-red-600 dark:text-red-400 font-bold">{item.count} {t('lbl_requests')}</span>
+              </div>
+            ))}
+            {translatedStats.topUrgentRegions.length === 0 && <span className="text-slate-400 dark:text-slate-500 italic">No data available</span>}
           </div>
         </div>
 
@@ -262,28 +238,16 @@ export const DonorDashboardPage: React.FC = () => {
         <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center transition-colors">
           <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">{t('kpi_urgent_cats')}</div>
           <div className="space-y-2">
-             {translatedStats.topNeededItems.slice(0, 3).map((item, idx) => (
-               <div key={idx} className="flex justify-between items-center text-sm">
-                 <span className="text-slate-700 dark:text-slate-200 font-medium">{item.name}</span>
-                 <span className="text-blue-600 dark:text-blue-400 font-bold">{item.count}% {t('lbl_unfulfilled')}</span>
-               </div>
-             ))}
-             {translatedStats.topNeededItems.length === 0 && <span className="text-slate-400 dark:text-slate-500 italic">No data available</span>}
+            {translatedStats.topNeededItems.slice(0, 3).map((item, idx) => (
+              <div key={idx} className="flex justify-between items-center text-sm">
+                <span className="text-slate-700 dark:text-slate-200 font-medium">{item.name}</span>
+                <span className="text-blue-600 dark:text-blue-400 font-bold">{item.count}% {t('lbl_unfulfilled')}</span>
+              </div>
+            ))}
+            {translatedStats.topNeededItems.length === 0 && <span className="text-slate-400 dark:text-slate-500 italic">No data available</span>}
           </div>
         </div>
       </div>
-
-      {/* AI Report Section */}
-      {report && (
-        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 p-6 rounded-xl border border-indigo-100 dark:border-indigo-800 animate-fade-in transition-colors">
-          <h3 className="flex items-center gap-2 font-bold text-indigo-900 dark:text-indigo-100 mb-4">
-            <i className="fa-solid fa-file-waveform"></i> {t('ai_analysis_title')}
-          </h3>
-          <div className="prose prose-sm text-indigo-900 dark:text-indigo-200 max-w-none space-y-2 whitespace-pre-wrap">
-            {report}
-          </div>
-        </div>
-      )}
 
       {/* Charts Grid */}
       <div className="grid lg:grid-cols-2 gap-6">
@@ -293,12 +257,12 @@ export const DonorDashboardPage: React.FC = () => {
           <ResponsiveContainer width="100%" height="90%">
             <BarChart data={translatedStats.topNeededItems}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" strokeOpacity={0.5} />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#94a3b8'}} />
-              <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#94a3b8'}} unit="%" domain={[0, 100]} />
-              <Tooltip 
-                cursor={{fill: '#f1f5f9', opacity: 0.1}} 
-                contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: '#fff'}}
-                itemStyle={{color: '#1e293b'}} 
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} unit="%" domain={[0, 100]} />
+              <Tooltip
+                cursor={{ fill: '#f1f5f9', opacity: 0.1 }}
+                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: '#fff' }}
+                itemStyle={{ color: '#1e293b' }}
                 formatter={(value: number) => [`${value}%`, t('lbl_unfulfilled')]}
               />
               <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]}>
@@ -329,17 +293,17 @@ export const DonorDashboardPage: React.FC = () => {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} itemStyle={{color: '#1e293b'}} />
-              <Legend verticalAlign="bottom" height={36}/>
+              <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} itemStyle={{ color: '#1e293b' }} />
+              <Legend verticalAlign="bottom" height={36} />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
         {/* Treemap Chart */}
         <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm h-80 lg:col-span-2 transition-colors">
-           <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4">{t('chart_treemap')}</h3>
-           {stats.keywordStats.length > 0 ? (
-             <ResponsiveContainer width="100%" height="90%">
+          <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4">{t('chart_treemap')}</h3>
+          {stats.keywordStats.length > 0 ? (
+            <ResponsiveContainer width="100%" height="90%">
               <Treemap
                 data={stats.keywordStats}
                 dataKey="size"
@@ -348,15 +312,15 @@ export const DonorDashboardPage: React.FC = () => {
                 fill="#8884d8"
                 content={<CustomizedTreemapContent />}
               >
-                 <Tooltip content={<CustomTreemapTooltip />} />
+                <Tooltip content={<CustomTreemapTooltip />} />
               </Treemap>
-             </ResponsiveContainer>
-           ) : (
-             <div className="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-500">
-                <i className="fa-solid fa-tags text-2xl mb-2"></i>
-                <p>No specific keyword data available yet.</p>
-             </div>
-           )}
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-500">
+              <i className="fa-solid fa-tags text-2xl mb-2"></i>
+              <p>No specific keyword data available yet.</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -364,7 +328,7 @@ export const DonorDashboardPage: React.FC = () => {
       <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden transition-colors">
         <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <h3 className="font-semibold text-slate-800 dark:text-slate-200">{t('feed_title')}</h3>
-          <select 
+          <select
             value={filterLocation}
             onChange={(e) => setFilterLocation(e.target.value)}
             className="text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white border-slate-300 dark:border-slate-600 border rounded-lg p-1.5 focus:ring-2 focus:ring-blue-500 outline-none"
@@ -377,7 +341,7 @@ export const DonorDashboardPage: React.FC = () => {
         </div>
         <div className="divide-y divide-slate-100 dark:divide-slate-700 max-h-[500px] overflow-y-auto">
           {pendingFiltered.length === 0 ? (
-             <div className="p-8 text-center text-slate-500 dark:text-slate-400">{t('feed_empty')}</div>
+            <div className="p-8 text-center text-slate-500 dark:text-slate-400">{t('feed_empty')}</div>
           ) : (
             pendingFiltered.map(req => (
               <div key={req.id} className="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">

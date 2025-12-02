@@ -164,25 +164,4 @@ export const generateItemKeywords = async (itemName: string, category: string): 
 };
 
 // --- Dashboard Insights ---
-export const generateSituationReport = async (requestsJson: string): Promise<string> => {
-  try {
-    const ai = new GoogleGenAI({ apiKey: getApiKey() });
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: `Here is a dataset of aid requests in JSON format. Generate a concise, 3-paragraph executive summary for donors. 
-      Paragraph 1: Overview of the most critical needs (high quantity items).
-      Paragraph 2: Location-based analysis (which areas are suffering most).
-      Paragraph 3: Recommendations for supply chain priority.
-      
-      Keep the tone professional and humanitarian.
-      
-      Dataset: ${requestsJson}`,
-    });
-
-    return response.text || "Unable to generate report.";
-  } catch (error) {
-    console.error("Gemini Insights Error:", error);
-    return "AI analysis unavailable at this time.";
-  }
-};
