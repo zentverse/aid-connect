@@ -62,12 +62,32 @@ export const DonorDashboardPage: React.FC = () => {
   // From main branch
   const [filterLocation, setFilterLocation] = useState('All');
   const [isLoading, setIsLoading] = useState(true);
+  const [ignoredKeywords, setIgnoredKeywords] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const allRequests = await getRequests();
         setRequests(allRequests);
+
+        // Extract all unique keywords
+        const allKeywords = new Set<string>();
+        allRequests.forEach(r => {
+          r.items.forEach(item => {
+            if (item.keywords) {
+              item.keywords.forEach(k => allKeywords.add(k.toLowerCase()));
+            }
+          });
+        });
+
+        // Identify generic keywords
+        if (allKeywords.size > 0) {
+          import('../services/geminiService').then(async (service) => {
+            const generic = await service.identifyGenericKeywords(Array.from(allKeywords));
+            setIgnoredKeywords(prev => [...prev, ...generic.map(k => k.toLowerCase())]);
+          });
+        }
+
         calculateStats(allRequests);
       } catch (err) {
         console.error("Failed to load dashboard data");
@@ -78,6 +98,13 @@ export const DonorDashboardPage: React.FC = () => {
 
     fetchData();
   }, []);
+
+  // Re-calculate stats when ignoredKeywords change
+  useEffect(() => {
+    if (requests.length > 0) {
+      calculateStats(requests);
+    }
+  }, [ignoredKeywords]);
 
   const calculateStats = (data: AidRequest[]) => {
     const total = data.length;
@@ -103,7 +130,9 @@ export const DonorDashboardPage: React.FC = () => {
         // Collect keywords from unfulfilled items
         if (r.status !== RequestStatus.FULFILLED && itemRemaining > 0 && item.keywords) {
           item.keywords.forEach(k => {
-            keywordMap.set(k, (keywordMap.get(k) || 0) + 1);
+            if (!ignoredKeywords.includes(k.toLowerCase())) {
+              keywordMap.set(k, (keywordMap.get(k) || 0) + 1);
+            }
           });
         }
       });

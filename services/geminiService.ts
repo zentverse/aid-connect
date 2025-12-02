@@ -35,7 +35,8 @@ export const extractAidItems = async (text: string): Promise<ExtractedItem[]> =>
       model: "gemini-2.0-flash",
       contents: `Extract aid items from the following request text. Map them to the closest category from this list: ${Object.values(AidCategory).join(', ')}. 
       For each item, also generate 5 specific and descriptive keywords or tags. 
-      Avoid generic single adjectives (e.g., use "Casual Wear" instead of "Casual", "Dry Rations" instead of "Dry"). 
+      Avoid generic single adjectives (e.g., use "Casual Wear" instead of "Casual", "Dry Rations" instead of "Dry").
+      Explicitly avoid generic terms like "strong", "clean", "utility", "emergency", "portable", "energy", "supply", "preserved", "electrical", "nutrition", "illumination".
       Focus on specific types, synonyms, or functional attributes.
       Return a JSON array. Text: "${text}"`,
       config: {
@@ -90,6 +91,7 @@ export const extractSmartFillData = async (text: string): Promise<ExtractedFormD
 
       For items, map category to one of: ${Object.values(AidCategory).join(', ')}.
       Generate 5 specific descriptive keywords for each item.
+      Explicitly avoid generic terms like "strong", "clean", "utility", "emergency", "portable", "energy", "supply", "preserved", "electrical", "nutrition", "illumination".
 
       Text: "${text}"`,
       config: {
@@ -141,7 +143,8 @@ export const generateItemKeywords = async (itemName: string, category: string): 
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
       contents: `Generate 5 specific and descriptive keywords or tags for the aid item "${itemName}" which is in the category "${category}". 
-      Avoid generic single adjectives (e.g., use "Casual Wear" instead of "Casual", "Dry Rations" instead of "Dry"). 
+      Avoid generic single adjectives (e.g., use "Casual Wear" instead of "Casual", "Dry Rations" instead of "Dry").
+      Explicitly avoid generic terms like "strong", "clean", "utility", "emergency", "portable", "energy", "supply", "preserved", "electrical", "nutrition", "illumination".
       Focus on specific types, synonyms, or functional attributes that help define the item clearly for donors and logistics.
       Return a JSON array of strings.`,
       config: {
@@ -159,6 +162,36 @@ export const generateItemKeywords = async (itemName: string, category: string): 
     return [];
   } catch (error) {
     console.error("Keyword Gen Error:", error);
+    return [];
+  }
+};
+
+export const identifyGenericKeywords = async (keywords: string[]): Promise<string[]> => {
+  try {
+    const ai = new GoogleGenAI({ apiKey: getApiKey() });
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: `Analyze the following list of keywords and identify which ones are too generic, vague, or not useful for a donor to understand what specific item is needed.
+      Examples of generic keywords to identify: "strong", "clean", "utility", "emergency", "portable", "energy", "supply", "preserved", "electrical", "nutrition", "illumination", "good", "best", "quality".
+      Return a JSON array containing ONLY the keywords from the input list that are identified as generic.
+      
+      Input Keywords: ${JSON.stringify(keywords)}`,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.ARRAY,
+          items: { type: Type.STRING }
+        }
+      }
+    });
+
+    if (response.text) {
+      return JSON.parse(response.text) as string[];
+    }
+    return [];
+  } catch (error) {
+    console.error("Generic Keyword Identification Error:", error);
     return [];
   }
 };
