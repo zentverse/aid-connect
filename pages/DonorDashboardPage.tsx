@@ -58,6 +58,8 @@ export const DonorDashboardPage: React.FC = () => {
   const { t } = useLanguage();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [requests, setRequests] = useState<AidRequest[]>([]);
+
+  // From main branch
   const [filterLocation, setFilterLocation] = useState('All');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -148,6 +150,8 @@ export const DonorDashboardPage: React.FC = () => {
     });
   };
 
+
+
   const filteredRequests = filterLocation === 'All' || filterLocation === t('feed_all_loc')
     ? requests
     : requests.filter(r => r.location === filterLocation);
@@ -202,6 +206,7 @@ export const DonorDashboardPage: React.FC = () => {
         </div>
         <div className="flex gap-2">
         </div>
+
       </div>
 
       {/* KPI Cards */}
@@ -248,6 +253,8 @@ export const DonorDashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+
 
       {/* Charts Grid */}
       <div className="grid lg:grid-cols-2 gap-6">
