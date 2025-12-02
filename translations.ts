@@ -62,7 +62,7 @@ export const translations = {
 
     // Update Status Page
     "status_title": "Check & Update Status",
-    "status_subtitle": "Enter your NIC or ID number to find your request and confirm receipt of items.",
+    "status_subtitle": "Enter your NIC or ID number to find your request and confirm receipt of items. Please update your status if you have received the item, this helps us provide aid more efficiently and ensure support reaches everyone who needs it.",
     "btn_search": "Search",
     "err_no_req": "No requests found",
     "err_no_req_desc": "Could not find any requests associated with",
@@ -145,7 +145,7 @@ export const translations = {
     "nav_dashboard": "දත්ත පුවරුව",
     "nav_contribute": "දායක වන්න",
     "footer_text": "ප්‍රජා සහන සම්බන්ධීකරණය.",
-    
+
     "contrib_title": "AidConnect වෙත දායක වන්න",
     "btn_report_bug": "දෝෂයක් වාර්තා කරන්න",
     "btn_support_dev": "සංවර්ධක කණ්ඩායමට සහාය වන්න",
@@ -191,7 +191,7 @@ export const translations = {
     "btn_processing": "සකසමින් පවතී...",
 
     "status_title": "තත්ත්වය පරීක්ෂා කිරීම",
-    "status_subtitle": "ඔබගේ ඉල්ලීම සොයා ගැනීමට ජා.හැ. අංකය ඇතුළත් කරන්න.",
+    "status_subtitle": "ඔබගේ ඉල්ලීම සොයා ගැනීමට සහ භාණ්ඩ ලැබුණු බව තහවුරු කිරීමට ඔබගේ ජා.හැ. අංකය ඇතුළත් කරන්න. ඔබට භාණ්ඩ ලැබී ඇත්නම් කරුණාකර ඔබගේ තත්ත්වය යාවත්කාලීන කරන්න. මෙය අපට වඩාත් කාර්යක්ෂමව ආධාර සැපයීමට සහ අවශ්‍යතා ඇති සෑම කෙනෙකුටම සහාය ලැබෙන බව සහතික කිරීමට උපකාරී වේ.",
     "btn_search": "සොයන්න",
     "err_no_req": "ඉල්ලීම් හමු නොවීය",
     "err_no_req_desc": "සඳහන් කළ අංකය සඳහා ඉල්ලීම් හමු නොවීය:",
@@ -223,7 +223,7 @@ export const translations = {
     "feed_empty": "මෙම ප්‍රදේශයේ සක්‍රීය ඉල්ලීම් නොමැත.",
     "ai_analysis_title": "AI තත්ත්ව විශ්ලේෂණය",
 
-     // Districts
+    // Districts
     "Gampaha": "ගම්පහ",
     "Colombo": "කොළඹ",
     "Puttalam": "පුත්තලම",
@@ -274,7 +274,7 @@ export const translations = {
     "nav_dashboard": "முகப்பு",
     "nav_contribute": "பங்களிப்பு",
     "footer_text": "சமூக நிவாரண ஒருங்கிணைப்பு.",
-    
+
     "contrib_title": "AidConnect க்கு பங்களிக்கவும்",
     "btn_report_bug": "பிழையைப் புகாரளிக்கவும்",
     "btn_support_dev": "உருவாக்குநர்களுக்கு ஆதரவளிக்கவும்",
@@ -320,7 +320,7 @@ export const translations = {
     "btn_processing": "செயலாக்கடுகிறது...",
 
     "status_title": "நிலையைச் சரிபார்க்கவும்",
-    "status_subtitle": "உங்கள் கோரிக்கையைக் கண்டறிய உங்கள் அடையாள அட்டை எண்ணை உள்ளிடவும்.",
+    "status_subtitle": "உங்கள் கோரிக்கையைக் கண்டறிய மற்றும் பொருட்கள் கிடைப்பதை உறுதிப்படுத்த உங்கள் தேசிய அடையாள அட்டை எண்ணை உள்ளிடவும். நீங்கள் பொருட்களைப் பெற்றிருந்தால், உங்கள் நிலையைப் புதுப்பிக்கவும். இது எங்களுக்கு மிகவும் திறமையாக உதவிகளை வழங்கவும், தேவைப்படும் அனைவருக்கும் ஆதரவு கிடைப்பதை உறுதி செய்யவும் உதவும்.",
     "btn_search": "தேடுக",
     "err_no_req": "கோரிக்கைகள் எதுவும் இல்லை",
     "err_no_req_desc": "இதனுடன் தொடர்புடைய கோரிக்கைகள் எதுவும் கிடைக்கவில்லை:",
