@@ -52,4 +52,5 @@ export interface DashboardStats {
   needsByLocation: { location: string; count: number }[];
   topUrgentRegions: { location: string; count: number }[];
   keywordStats: { name: string; size: number }[];
+  locationStats: { location: string; unfulfilled: number; total: number; percentage: number }[];
 }

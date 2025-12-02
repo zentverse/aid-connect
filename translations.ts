@@ -95,7 +95,7 @@ export const translations = {
     "lbl_requests": "Requests",
     "lbl_unfulfilled": "Unfulfilled",
     "chart_unfulfilled": "Unfulfilled Needs (%) by Category",
-    "chart_location": "Request Distribution by Location",
+    "chart_location": "Unfulfilled Needs (%) by Location",
     "chart_treemap": "Urgent Specific Needs (Keyword Treemap)",
     "feed_title": "Live Request Feed",
     "feed_all_loc": "All Locations",
