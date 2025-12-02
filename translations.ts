@@ -62,7 +62,7 @@ export const translations = {
 
     // Update Status Page
     "status_title": "Check & Update Status",
-    "status_subtitle": "Enter your NIC or ID number to find your request and confirm receipt of items.",
+    "status_subtitle": "Enter your NIC or ID number to find your request and confirm receipt of items. Please update your status if you have received the item, this helps us provide aid more efficiently and ensure support reaches everyone who needs it.",
     "btn_search": "Search",
     "err_no_req": "No requests found",
     "err_no_req_desc": "Could not find any requests associated with",
@@ -74,6 +74,13 @@ export const translations = {
     "th_received": "Received",
     "th_action": "Action",
     "hint_update": "* Please update the 'Received' count as items arrive. This helps donors know what is still needed.",
+    "btn_delete_request": "Delete Request",
+    "confirm_delete_title": "Confirm Deletion",
+    "confirm_delete_message": "Are you sure you want to permanently delete this request? This action cannot be undone.",
+    "btn_confirm_delete": "Yes, Delete",
+    "btn_cancel": "Cancel",
+    "msg_delete_success": "Request deleted successfully.",
+    "msg_delete_error": "Failed to delete request. Please try again.",
 
     // Dashboard
     "dash_title": "Needs Dashboard",
@@ -145,7 +152,7 @@ export const translations = {
     "nav_dashboard": "දත්ත පුවරුව",
     "nav_contribute": "දායක වන්න",
     "footer_text": "ප්‍රජා සහන සම්බන්ධීකරණය.",
-    
+
     "contrib_title": "AidConnect වෙත දායක වන්න",
     "btn_report_bug": "දෝෂයක් වාර්තා කරන්න",
     "btn_support_dev": "සංවර්ධක කණ්ඩායමට සහාය වන්න",
@@ -154,7 +161,7 @@ export const translations = {
     "hero_title_2": "සම්බන්ධීකරණය",
     "hero_desc": "විපතට පත්වූවන් සහ උපකාර කිරීමට කැමති අය සම්බන්ධ කිරීම. 'Cyclone Ditwah' මගින් පීඩාවට පත් ශ්‍රී ලාංකිකයන් සඳහා.",
     "card_need_title": "මට උදව් අවශ්‍යයි",
-    "card_need_desc": "අවශ්‍ය දේ ඉල්ලන්න හෝ ඔබගේ ඉල්ලීමේ තත්ත්වය පරීක්ෂා කරන්න.",
+    "card_need_desc": "අවශ්‍ය දේ ඉල්ලන්න හෝ ඔබගේ ඉල්ලීමේ තත්ත්වය යාවත්කාලීන කරන්න.",
     "btn_request_aid": "ආධාර ඉල්ලන්න",
     "btn_update_status": "තත්ත්වය යාවත්කාලීන කරන්න",
     "card_give_title": "මට උදව් කිරීමට අවශ්‍යයි",
@@ -190,8 +197,8 @@ export const translations = {
     "btn_submit": "ඉල්ලීම යොමු කරන්න",
     "btn_processing": "සකසමින් පවතී...",
 
-    "status_title": "තත්ත්වය පරීක්ෂා කිරීම",
-    "status_subtitle": "ඔබගේ ඉල්ලීම සොයා ගැනීමට ජා.හැ. අංකය ඇතුළත් කරන්න.",
+    "status_title": "තත්ත්වය යාවත්කාලීන කරන්න",
+    "status_subtitle": "ඔබගේ ඉල්ලීම සොයා ගැනීමට සහ භාණ්ඩ ලැබුණු බව තහවුරු කිරීමට ඔබගේ ජා.හැ. අංකය ඇතුළත් කරන්න. ඔබට භාණ්ඩ ලැබී ඇත්නම් කරුණාකර ඔබගේ තත්ත්වය යාවත්කාලීන කරන්න. මෙය අපට වඩාත් කාර්යක්ෂමව ආධාර සැපයීමට සහ අවශ්‍යතා ඇති සෑම කෙනෙකුටම සහාය ලැබෙන බව සහතික කිරීමට උපකාරී වේ.",
     "btn_search": "සොයන්න",
     "err_no_req": "ඉල්ලීම් හමු නොවීය",
     "err_no_req_desc": "සඳහන් කළ අංකය සඳහා ඉල්ලීම් හමු නොවීය:",
@@ -203,6 +210,13 @@ export const translations = {
     "th_received": "ලැබුණු",
     "th_action": "ක්‍රියා",
     "hint_update": "* ද්‍රව්‍ය ලැබුණු පසු 'ලැබුණු' ප්‍රමාණය යාවත්කාලීන කරන්න.",
+    "btn_delete_request": "ඉල්ලීම මකන්න",
+    "confirm_delete_title": "මැකීම තහවුරු කරන්න",
+    "confirm_delete_message": "ඔබට මෙම ඉල්ලීම ස්ථිරවම මකා දැමීමට අවශ්‍ය බව විශ්වාසද? මෙම ක්‍රියාව ආපසු හැරවිය නොහැක.",
+    "btn_confirm_delete": "ඔව්, මකන්න",
+    "btn_cancel": "අවලංගු කරන්න",
+    "msg_delete_success": "ඉල්ලීම සාර්ථකව මකා දමන ලදී.",
+    "msg_delete_error": "ඉල්ලීම මකා දැමීමට අසමත් විය. කරුණාකර නැවත උත්සාහ කරන්න.",
 
     "dash_title": "අවශ්‍යතා පුවරුව",
     "dash_subtitle": "ප්‍රජා අවශ්‍යතා සහ බෙදාහැරීමේ තත්ත්වය.",
@@ -223,7 +237,7 @@ export const translations = {
     "feed_empty": "මෙම ප්‍රදේශයේ සක්‍රීය ඉල්ලීම් නොමැත.",
     "ai_analysis_title": "AI තත්ත්ව විශ්ලේෂණය",
 
-     // Districts
+    // Districts
     "Gampaha": "ගම්පහ",
     "Colombo": "කොළඹ",
     "Puttalam": "පුත්තලම",
@@ -274,7 +288,7 @@ export const translations = {
     "nav_dashboard": "முகப்பு",
     "nav_contribute": "பங்களிப்பு",
     "footer_text": "சமூக நிவாரண ஒருங்கிணைப்பு.",
-    
+
     "contrib_title": "AidConnect க்கு பங்களிக்கவும்",
     "btn_report_bug": "பிழையைப் புகாரளிக்கவும்",
     "btn_support_dev": "உருவாக்குநர்களுக்கு ஆதரவளிக்கவும்",
@@ -320,7 +334,7 @@ export const translations = {
     "btn_processing": "செயலாக்கடுகிறது...",
 
     "status_title": "நிலையைச் சரிபார்க்கவும்",
-    "status_subtitle": "உங்கள் கோரிக்கையைக் கண்டறிய உங்கள் அடையாள அட்டை எண்ணை உள்ளிடவும்.",
+    "status_subtitle": "உங்கள் கோரிக்கையைக் கண்டறிய மற்றும் பொருட்கள் கிடைப்பதை உறுதிப்படுத்த உங்கள் தேசிய அடையாள அட்டை எண்ணை உள்ளிடவும். நீங்கள் பொருட்களைப் பெற்றிருந்தால், உங்கள் நிலையைப் புதுப்பிக்கவும். இது எங்களுக்கு மிகவும் திறமையாக உதவிகளை வழங்கவும், தேவைப்படும் அனைவருக்கும் ஆதரவு கிடைப்பதை உறுதி செய்யவும் உதவும்.",
     "btn_search": "தேடுக",
     "err_no_req": "கோரிக்கைகள் எதுவும் இல்லை",
     "err_no_req_desc": "இதனுடன் தொடர்புடைய கோரிக்கைகள் எதுவும் கிடைக்கவில்லை:",
@@ -332,6 +346,13 @@ export const translations = {
     "th_received": "பெறப்பட்டது",
     "th_action": "செயல்",
     "hint_update": "* பொருட்கள் வந்தவுடன் 'பெறப்பட்டது' எண்ணிக்கையைப் புதுப்பிக்கவும்.",
+    "btn_delete_request": "கோரிக்கையை நீக்கு",
+    "confirm_delete_title": "நீக்குதலை உறுதிப்படுத்து",
+    "confirm_delete_message": "இந்த கோரிக்கையை நிரந்தரமாக நீக்க விரும்புகிறீர்களா? இந்த செயலை மாற்ற முடியாது.",
+    "btn_confirm_delete": "ஆம், நீக்கு",
+    "btn_cancel": "ரத்து செய்",
+    "msg_delete_success": "கோரிக்கை வெற்றிகரமாக நீக்கப்பட்டது.",
+    "msg_delete_error": "கோரிக்கையை நீக்க முடியவில்லை. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.",
 
     "dash_title": "தேவைகள் பலகை",
     "dash_subtitle": "சமூகத் தேவைகள் மற்றும் விநியோக நிலை.",

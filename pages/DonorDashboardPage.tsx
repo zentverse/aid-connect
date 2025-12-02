@@ -59,6 +59,7 @@ export const DonorDashboardPage: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [requests, setRequests] = useState<AidRequest[]>([]);
 
+  // From main branch
   const [filterLocation, setFilterLocation] = useState('All');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -202,6 +203,8 @@ export const DonorDashboardPage: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('dash_title')}</h1>
           <p className="text-slate-500 dark:text-slate-400">{t('dash_subtitle')}</p>
+        </div>
+        <div className="flex gap-2">
         </div>
 
       </div>

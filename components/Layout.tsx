@@ -17,12 +17,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const isHome = location.pathname === '/';
   const isDashboard = location.pathname === '/donate';
-  
+
   // Define beneficiary pages where the Dashboard link should be hidden
   const isBeneficiaryPage = location.pathname === '/request' || location.pathname === '/status';
 
   const toggleLangMenu = () => setShowLangMenu(!showLangMenu);
-  
+
   const selectLang = (lang: Language) => {
     setLanguage(lang);
     setShowLangMenu(false);
@@ -39,22 +39,22 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             {/* AidConnect remains untranslated as per request */}
             <span className="font-bold text-xl text-slate-800 dark:text-slate-100 tracking-tight">AidConnect</span>
           </Link>
-          
+
           <div className="flex items-center gap-4">
             {!isHome && !isDashboard && (
               <nav className="flex items-center gap-4 hidden md:flex">
-                 <Link to="/request" className={`text-sm font-medium ${location.pathname === '/request' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}`}>
-                   {t('nav_request')}
-                 </Link>
-                 <Link to="/status" className={`text-sm font-medium ${location.pathname === '/status' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}`}>
-                   {t('nav_status')}
-                 </Link>
-                 {/* Only show Dashboard link if NOT on beneficiary pages */}
-                 {!isBeneficiaryPage && (
-                   <Link to="/donate" className={`text-sm font-medium ${location.pathname === '/donate' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}`}>
-                     {t('nav_dashboard')}
-                   </Link>
-                 )}
+                <Link to="/request" className={`text-sm font-medium ${location.pathname === '/request' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}`}>
+                  {t('nav_request')}
+                </Link>
+                <Link to="/status" className={`text-sm font-medium ${location.pathname === '/status' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}`}>
+                  {t('nav_status')}
+                </Link>
+                {/* Only show Dashboard link if NOT on beneficiary pages */}
+                {!isBeneficiaryPage && (
+                  <Link to="/donate" className={`text-sm font-medium ${location.pathname === '/donate' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}`}>
+                    {t('nav_dashboard')}
+                  </Link>
+                )}
               </nav>
             )}
 
@@ -69,14 +69,15 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </div>
       </header>
-      
+
       <main className="flex-grow w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </main>
 
       <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 mt-auto transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-4 text-center text-slate-400 dark:text-slate-500 text-sm">
-          &copy; {new Date().getFullYear()} AidConnect. {t('footer_text')}
+          <p>&copy; {new Date().getFullYear()} AidConnect. {t('footer_text')}</p>
+          <p className="mt-1">v1.0.1</p>
         </div>
       </footer>
 
@@ -100,7 +101,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <button onClick={() => selectLang('ta')} className={`px-4 py-2 text-sm text-left hover:bg-slate-50 dark:hover:bg-slate-700 ${language === 'ta' ? 'font-bold text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200'}`}>தமிழ்</button>
           </div>
         )}
-        <button 
+        <button
           onClick={toggleLangMenu}
           className="w-12 h-12 rounded-full bg-white dark:bg-slate-700 text-slate-700 dark:text-white shadow-lg border border-slate-200 dark:border-none hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors flex items-center justify-center text-lg"
           title="Change Language"
@@ -113,34 +114,34 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       {showContribModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in">
           <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-slate-100 dark:border-slate-700 relative animate-scale-up">
-             <button
-               onClick={() => setShowContribModal(false)}
-               className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-             >
-               <i className="fa-solid fa-times text-lg"></i>
-             </button>
+            <button
+              onClick={() => setShowContribModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            >
+              <i className="fa-solid fa-times text-lg"></i>
+            </button>
 
-             <div className="text-center">
-               <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
-                 <i className="fa-solid fa-hand-holding-heart"></i>
-               </div>
-               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">{t('contrib_title')}</h3>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
+                <i className="fa-solid fa-hand-holding-heart"></i>
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">{t('contrib_title')}</h3>
 
-               <div className="space-y-3">
-                 <a
-                   href="#" 
-                   className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
-                 >
-                   <i className="fa-solid fa-bug"></i> {t('btn_report_bug')}
-                 </a>
-                 <a
-                   href="#"
-                   className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 dark:shadow-none"
-                 >
-                   <i className="fa-solid fa-mug-hot"></i> {t('btn_support_dev')}
-                 </a>
-               </div>
-             </div>
+              <div className="space-y-3">
+                <a
+                  href="https://forms.gle/7N6ELXNHfZg6fuwU7"
+                  className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                >
+                  <i className="fa-solid fa-bug"></i> {t('btn_report_bug')}
+                </a>
+                <a
+                  href="https://forms.gle/9uHhS1YsdtzaX4KfA"
+                  className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 dark:shadow-none"
+                >
+                  <i className="fa-solid fa-mug-hot"></i> {t('btn_support_dev')}
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       )}
